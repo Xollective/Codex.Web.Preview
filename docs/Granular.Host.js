@@ -1822,9 +1822,9 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                     Granular.Host.HtmlElementExtensions.SetHtmlStyleProperty(this.htmlElement, "max-width", this.converter.ToPixelString(maxWidth));
                 }
 
-                this.htmlElement.innerHTML = this.converter.ToHtmlContentString(Granular.Extensions.StringExtensions.DefaultIfNullOrEmpty(text, "A"));
+                this.htmlElement.textContent = Granular.Extensions.StringExtensions.DefaultIfNullOrEmpty(text, "A");
 
-                return new System.Windows.Size(Granular.Extensions.StringExtensions.IsNullOrEmpty(text) ? 0 : ((this.htmlElement.offsetWidth + 2) | 0), this.htmlElement.offsetHeight);
+                return new System.Windows.Size(Granular.Extensions.StringExtensions.IsNullOrEmpty(text) ? 0 : this.htmlElement.offsetWidth, this.htmlElement.offsetHeight);
             }
         }
     });

@@ -1851,9 +1851,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         statics: {
             methods: {
                 Raise: function (handler, sender, oldValue, newValue) {
-                    if (!Bridge.staticEquals(handler, null)) {
-                        handler(sender, oldValue, newValue);
-                    }
+                    !Bridge.staticEquals(handler, null) ? handler(sender, oldValue, newValue) : null;
                 }
             }
         }
@@ -1965,6 +1963,10 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     return System.Windows.DependencyProperty.registeredReadOnlyPropertiesKey.TryGetValue(key.DependencyProperty.hashKey, registeredKey) && Bridge.referenceEquals(registeredKey.v, key);
                 },
                 IsValidType: function (value, propertyType) {
+                    if (Bridge.referenceEquals(propertyType, System.String)) {
+                        return true;
+                    }
+
                     return value == null ? !System.TypeExtensions.GetIsValueType(propertyType) || Bridge.Reflection.isGenericType(propertyType) && Bridge.referenceEquals(Bridge.Reflection.getGenericTypeDefinition(propertyType), System.Nullable$1) : Bridge.Reflection.isInstanceOfType(value, propertyType);
                 },
                 ConvertDefaultValue: function (key, defaultValue, propertyType) {
@@ -4831,6 +4833,27 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
     Bridge.apply($asm.$.System.Windows.Markup.KnownTypes, {
         f1: function (type) {
             return Bridge.Reflection.getTypeFullName(type);
+        }
+    });
+
+    /** @namespace System.Windows.Markup */
+
+    /**
+     * Shim interface for MarkupExtensionReturnTypeAttribute in System.Xaml.dll
+     *
+     * @public
+     * @class System.Windows.Markup.MarkupExtensionReturnTypeAttribute
+     * @augments System.Attribute
+     */
+    Bridge.define("System.Windows.Markup.MarkupExtensionReturnTypeAttribute", {
+        inherits: [System.Attribute],
+        ctors: {
+            ctor: function (returnType, expressionType) {
+                if (expressionType === void 0) { expressionType = null; }
+
+                this.$initialize();
+                System.Attribute.ctor.call(this);
+            }
         }
     });
 
@@ -10035,7 +10058,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     this.visualRenderElement.System$Windows$Media$IContainerRenderElement$InsertChild(((this.renderChildrenOffset + renderChildIndex) | 0), child.GetRenderElement(this.renderElementFactory));
                 }
 
-                this.InvalidateHitTestBounds();
+                this.OnVisualChildrenChanged();
             },
             RemoveVisualChild: function (child) {
                 if (!Bridge.referenceEquals(child.VisualParent, this)) {
@@ -10049,7 +10072,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     this.visualRenderElement.System$Windows$Media$IContainerRenderElement$RemoveChild(child.GetRenderElement(this.renderElementFactory));
                 }
 
-                this.InvalidateHitTestBounds();
+                this.OnVisualChildrenChanged();
             },
             SetVisualChildIndex: function (child, newIndex) {
                 var oldIndex = this.visualChildren.indexOf(child);
@@ -10131,6 +10154,11 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             CreateRenderElementContentOverride: function (factory) {
                 return null;
+            },
+            OnVisualChildrenChangedCore: function () { },
+            OnVisualChildrenChanged: function () {
+                this.InvalidateHitTestBounds();
+                this.OnVisualChildrenChangedCore();
             },
             OnVisualBoundsChanged: function () {
                 //
@@ -10591,7 +10619,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
 
                 if (e.Action === Granular.Collections.NotifyCollectionChangedAction.Reset) {
-                    this.RemoveRange(0, this.ItemsCount);
+                    this.RemoveRange(0, oldItemsCount);
                 }
                 Granular.Extensions.EventHandlerExtensions.Raise$4(Bridge.global.System.Windows.Controls.Primitives.ItemsChangedEventArgs, this.ItemsChanged, this, new System.Windows.Controls.Primitives.ItemsChangedEventArgs(e.Action, e.OldStartingIndex, e.NewStartingIndex, newItemsCount, oldContainersCount));
             },
@@ -11460,19 +11488,10 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
 
     Bridge.define("System.Windows.Data.DataContextSourceObserver", {
         inherits: [System.Windows.Data.IObservableValue,System.IDisposable],
-        statics: {
-            methods: {
-                GetFrameworkElementAncestor: function (target) {
-                    while (!(Bridge.is(target, System.Windows.FrameworkElement)) && Bridge.is(target, System.Windows.IContextElement)) {
-                        target = Bridge.cast(target, System.Windows.IContextElement).System$Windows$IContextElement$ContextParent;
-                    }
-
-                    return Bridge.as(target, System.Windows.FrameworkElement);
-                }
-            }
-        },
         fields: {
             target: null,
+            forceUseAncestor: false,
+            contextElementTarget: null,
             frameworkElementValue: null,
             dataContextValue: null
         },
@@ -11493,11 +11512,15 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             "dispose", "System$IDisposable$dispose"
         ],
         ctors: {
-            ctor: function (target) {
+            ctor: function (target, forceUseAncestor) {
+                if (forceUseAncestor === void 0) { forceUseAncestor = false; }
+
                 this.$initialize();
                 this.target = target;
+                this.contextElementTarget = Bridge.as(target, System.Windows.IContextElement);
+                this.forceUseAncestor = forceUseAncestor;
 
-                this.frameworkElementValue = new System.Windows.Data.ObservableValue.$ctor1(System.Windows.Data.DataContextSourceObserver.GetFrameworkElementAncestor(target));
+                this.frameworkElementValue = new System.Windows.Data.ObservableValue.$ctor1(this.GetFrameworkElementAncestor());
                 this.frameworkElementValue.addValueChanged(Bridge.fn.bind(this, $asm.$.System.Windows.Data.DataContextSourceObserver.f1));
 
                 this.dataContextValue = new System.Windows.Data.DependencyPropertyObserver(System.Windows.FrameworkElement.DataContextProperty);
@@ -11505,20 +11528,29 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.dataContextValue.addValueChanged(Bridge.fn.bind(this, $asm.$.System.Windows.Data.DataContextSourceObserver.f2));
 
                 if (Bridge.is(target, System.Windows.IContextElement)) {
-                    Bridge.cast(target, System.Windows.IContextElement).System$Windows$IContextElement$addContextParentChanged(Bridge.fn.cacheBind(this, this.OnTargetContextParentChanged));
+                    this.contextElementTarget.System$Windows$IContextElement$addContextParentChanged(Bridge.fn.cacheBind(this, this.OnTargetContextParentChanged));
                 }
             }
         },
         methods: {
             dispose: function () {
                 if (Bridge.is(this.target, System.Windows.IContextElement)) {
-                    Bridge.cast(this.target, System.Windows.IContextElement).System$Windows$IContextElement$removeContextParentChanged(Bridge.fn.cacheBind(this, this.OnTargetContextParentChanged));
+                    this.contextElementTarget.System$Windows$IContextElement$removeContextParentChanged(Bridge.fn.cacheBind(this, this.OnTargetContextParentChanged));
                 }
 
                 this.dataContextValue.dispose();
             },
             OnTargetContextParentChanged: function (sender, e) {
-                this.frameworkElementValue.BaseValue = System.Windows.Data.DataContextSourceObserver.GetFrameworkElementAncestor(this.target);
+                this.frameworkElementValue.BaseValue = this.GetFrameworkElementAncestor();
+            },
+            GetFrameworkElementAncestor: function () {
+                var contextElement = this.forceUseAncestor ? this.contextElementTarget != null ? this.contextElementTarget.System$Windows$IContextElement$ContextParent : null : this.contextElementTarget;
+
+                while (contextElement != null && !(Bridge.is(contextElement, System.Windows.FrameworkElement))) {
+                    contextElement = contextElement != null ? contextElement.System$Windows$IContextElement$ContextParent : null;
+                }
+
+                return Bridge.as(contextElement, System.Windows.FrameworkElement);
             }
         }
     });
@@ -11928,6 +11960,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             }
         },
         fields: {
+            valueChangedReentrancyLock: null,
             value: null,
             notifyValueChangedEventHandler: null,
             indexedObservableValueChangedEventHandler: null,
@@ -11989,6 +12022,9 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             "CoerceValue", "System$Windows$IDependencyPropertyValueEntry$CoerceValue"
         ],
         ctors: {
+            init: function () {
+                this.valueChangedReentrancyLock = new Granular.ReentrancyLock();
+            },
             ctor: function (dependencyObject, dependencyProperty, coerceValueCallback) {
                 if (coerceValueCallback === void 0) { coerceValueCallback = null; }
 
@@ -12039,6 +12075,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
 
                 this.values[System.Array.index(priority, this.values)] = value;
+
                 this.OnValueChanged(priority, value);
             },
             GetBaseValuePriority: function () {
@@ -12071,6 +12108,20 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.OnValueChanged(Bridge.cast(sender, System.Windows.DependencyPropertyValueEntry.IndexedObservableValue).Index, newValue);
             },
             OnValueChanged: function (newValuePriority, newValue) {
+                var $t;
+                if (!Granular.ReentrancyLock.op_Implicit(this.valueChangedReentrancyLock)) {
+                    $t = this.valueChangedReentrancyLock.Enter();
+                    try {
+                        this.OnValueChangedCore(newValuePriority, newValue);
+                    }
+                    finally {
+                        if (Bridge.hasValue($t)) {
+                            $t.System$IDisposable$dispose();
+                        }
+                    }
+                }
+            },
+            OnValueChangedCore: function (newValuePriority, newValue) {
                 if (this.ValuePriority > newValuePriority) {
                     if (this.baseValuePriority <= newValuePriority && newValuePriority <= System.Windows.DependencyPropertyValueEntry.BaseValueHighestPriority) {
                         this.baseValuePriority = 12; // invalidate baseValuePriority
@@ -13760,7 +13811,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                         return;
                     }
 
-                    if (!Bridge.referenceEquals(fieldInfo.rt, Bridge.getType(fieldValue))) {
+                    if (!Bridge.Reflection.isAssignableFrom(fieldInfo.rt, Bridge.getType(fieldValue))) {
                         throw new Granular.Exception("Cannot assign \"{0}\" of type \"{1}\" to field \"{2}.{3}\" of type \"{4}\"", [fieldName, Bridge.Reflection.getTypeName(Bridge.getType(fieldValue)), Bridge.Reflection.getTypeName(Bridge.getType(target)), fieldName, fieldInfo.rt]);
                     }
 
@@ -14062,6 +14113,18 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 return Bridge.box(System.Int32.parse(value.toString()), System.Int32);
             }
         }
+    });
+
+    /**
+     * Shim interface for MarkupExtension in System.Xaml.dll
+     *
+     * @abstract
+     * @public
+     * @class System.Windows.Markup.MarkupExtension
+     * @implements  System.Windows.Markup.IMarkupExtension
+     */
+    Bridge.define("System.Windows.Markup.MarkupExtension", {
+        inherits: [System.Windows.Markup.IMarkupExtension]
     });
 
     Bridge.define("System.Windows.Markup.MarkupExtensionElementFactory", {
@@ -17518,6 +17581,10 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.disableMeasureInvalidationRequests = (this.disableMeasureInvalidationRequests + 1) | 0;
                 return this.disableMeasureInvalidationToken;
             },
+            OnVisualChildrenChangedCore: function () {
+                this.InvalidateMeasure();
+                this.InvalidateArrange();
+            },
             RaiseLayoutUpdated: function () {
                 this.OnLayoutUpdated();
                 Granular.Extensions.EventHandlerExtensions.Raise$3(this.LayoutUpdated, this, { });
@@ -18136,7 +18203,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
             },
             methods: {
-                CreateSourceObserver: function (target, source, relativeSource, elementName) {
+                CreateSourceObserver: function (target, targetProperty, source, relativeSource, elementName) {
                     if (source != null) {
                         return new System.Windows.Data.StaticObservableValue(source);
                     }
@@ -18149,7 +18216,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                         return new System.Windows.Data.ScopeElementSourceObserver(target, elementName);
                     }
 
-                    return new System.Windows.Data.DataContextSourceObserver(target);
+                    return new System.Windows.Data.DataContextSourceObserver(target, Bridge.referenceEquals(targetProperty, System.Windows.FrameworkElement.DataContextProperty));
                 },
                 GetDefaultBindingMode: function (dependencyObject, dependencyProperty) {
                     var FrameworkPropertyMetadata = Bridge.as(dependencyProperty.GetMetadata(Bridge.getType(dependencyObject)), System.Windows.FrameworkPropertyMetadata);
@@ -18235,7 +18302,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.isSourceUpdateMode = resolvedBindingMode === System.Windows.Data.BindingMode.TwoWay || resolvedBindingMode === System.Windows.Data.BindingMode.OneWayToSource;
                 this.isTargetUpdateMode = resolvedBindingMode === System.Windows.Data.BindingMode.TwoWay || resolvedBindingMode === System.Windows.Data.BindingMode.OneWay;
 
-                this.sourceObserver = System.Windows.Data.BindingExpression.CreateSourceObserver(this.Target, this.Source, this.RelativeSource, this.ElementName);
+                this.sourceObserver = System.Windows.Data.BindingExpression.CreateSourceObserver(this.Target, this.TargetProperty, this.Source, this.RelativeSource, this.ElementName);
                 this.sourceExpression = new System.Windows.Data.ObservableExpression.$ctor1(this.sourceObserver, this.Path || System.Windows.PropertyPath.Empty);
 
                 // try to update the target (or the source on OneWayToSource)
@@ -18276,7 +18343,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             UpdateTargetOnSourceChanged: function () {
                 var $t;
-                if (Granular.ReentrancyLock.op_Implicit(this.disableTargetUpdate)) {
+                if (Granular.ReentrancyLock.op_Implicit(this.disableTargetUpdate) || Granular.ReentrancyLock.op_Implicit(this.disableSourceUpdate)) {
                     return;
                 }
 
@@ -18299,6 +18366,8 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     value = this.TargetNullValue;
                 } else if (!Bridge.referenceEquals(value, System.Windows.Data.ObservableValue.UnsetValue) && this.Converter != null) {
                     value = this.Converter.System$Windows$Data$IValueConverter$Convert(value, this.TargetProperty.PropertyType, this.ConverterParameter);
+                } else if (!Bridge.referenceEquals(value, System.Windows.Data.ObservableValue.UnsetValue) && value != null && !(Bridge.is(value, System.String)) && Bridge.referenceEquals(this.TargetProperty.PropertyType, System.String)) {
+                    value = value.toString();
                 }
 
                 this.targetValue.BaseValue = value;
@@ -20375,7 +20444,8 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 DataContextProperty: null,
                 CursorProperty: null,
                 ForceCursorProperty: null,
-                LayoutTransformProperty: null
+                LayoutTransformProperty: null,
+                m_nextElementId: 0
             },
             ctors: {
                 init: function () {
@@ -20400,6 +20470,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     this.CursorProperty = System.Windows.DependencyProperty.Register("Cursor", System.Windows.Input.Cursor, System.Windows.FrameworkElement, new System.Windows.FrameworkPropertyMetadata.$ctor11($asm.$.System.Windows.FrameworkElement.f7));
                     this.ForceCursorProperty = System.Windows.DependencyProperty.Register("ForceCursor", System.Boolean, System.Windows.FrameworkElement, new System.Windows.FrameworkPropertyMetadata.$ctor11($asm.$.System.Windows.FrameworkElement.f7));
                     this.LayoutTransformProperty = System.Windows.DependencyProperty.Register("LayoutTransform", System.Windows.Media.Transform, System.Windows.FrameworkElement, new System.Windows.FrameworkPropertyMetadata.$ctor3(System.Windows.Media.Transform.Identity, 3, $asm.$.System.Windows.FrameworkElement.f8));
+                    this.m_nextElementId = 0;
                 }
             },
             methods: {
@@ -20670,7 +20741,8 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
             },
             Triggers: null,
-            Name: null
+            Name: null,
+            ElementId: 0
         },
         alias: [
             "addResourcesChanged", "System$Windows$IResourceContainer$addResourcesChanged",
@@ -20678,6 +20750,10 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             "TryGetResource", "System$Windows$IResourceContainer$TryGetResource"
         ],
         ctors: {
+            init: function () {
+                var $t;
+                this.ElementId = Bridge.identity(System.Windows.FrameworkElement.m_nextElementId, ($t = (System.Windows.FrameworkElement.m_nextElementId + 1) | 0, System.Windows.FrameworkElement.m_nextElementId = $t, $t));
+            },
             ctor: function () {
                 this.$initialize();
                 System.Windows.UIElement.ctor.call(this);
@@ -23217,10 +23293,11 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.Template = this.FindTemplate();
             },
             SetDataContext: function () {
+                var $t;
                 if (Bridge.is(this.Content, System.Windows.Media.Visual)) {
                     this.ClearValue(System.Windows.FrameworkElement.DataContextProperty);
                 } else {
-                    this.DataContext = this.Content;
+                    this.SetValue(System.Windows.FrameworkElement.DataContextProperty, ($t = new System.Windows.Data.Binding(), $t.Source = this, $t.Path = System.Windows.PropertyPath.FromDependencyProperty(System.Windows.Controls.ContentPresenter.ContentProperty), $t.Mode = System.Windows.Data.BindingMode.OneWay, $t));
                 }
             },
             FindTemplate: function () {
