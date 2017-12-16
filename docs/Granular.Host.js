@@ -3260,6 +3260,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                 Granular.Host.HtmlElementExtensions.SetHtmlTextAlignment(this.HtmlElement, this.TextAlignment, converter);
                 Granular.Host.HtmlElementExtensions.SetHtmlTextTrimming(this.HtmlElement, this.TextTrimming);
                 Granular.Host.HtmlElementExtensions.SetHtmlTextWrapping(this.HtmlElement, this.TextWrapping, converter);
+                Granular.Host.HtmlElementExtensions.SetHtmlClipToBounds(this.HtmlElement, true);
             }
         },
         methods: {
@@ -4487,11 +4488,13 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
         ],
         ctors: {
             ctor: function (owner, factory, renderQueue, converter) {
+                var $t;
                 this.$initialize();
                 Granular.Host.Render.HtmlContainerRenderElement.ctor.call(this, Granular.Host.Render.HtmlVisualRenderElement.CreateHtmlElement(owner), renderQueue);
                 this.factory = factory;
                 this.renderQueue$1 = renderQueue;
                 this.converter = converter;
+                ($t = (Bridge.as(owner, Granular.Presentation.Web.IHtmlElementHost))) != null ? $t.Granular$Presentation$Web$IHtmlElementHost$SetRenderElement(this.HtmlElement) : null;
 
                 this.bounds = System.Windows.Rect.Zero;
                 this.isVisible = true;

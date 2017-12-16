@@ -6,6 +6,49 @@
 Bridge.assembly("Granular.Presentation", function ($asm, globals) {
     "use strict";
 
+    Bridge.define("Granular.Presentation.Web.HtmlInputElementExtensions", {
+        statics: {
+            methods: {
+                DispatchEvent: function (inputElement, e, eventType) {
+                    var $t;
+                    ($t = (Bridge.as(inputElement, Granular.Presentation.Web.IHtmlInputElement))) != null ? $t.Granular$Presentation$Web$IHtmlInputElement$DispatchEvent(e, eventType) : null;
+                }
+            }
+        }
+    });
+
+    Bridge.define("Granular.Presentation.Web.IHtmlElementHost", {
+        $kind: "interface"
+    });
+
+    Bridge.define("Granular.Presentation.Web.IHtmlInputElement", {
+        $kind: "interface"
+    });
+
+    Bridge.define("MS.Internal.KnownBoxes.BooleanBoxes", {
+        statics: {
+            fields: {
+                TrueBox: null,
+                FalseBox: null
+            },
+            ctors: {
+                init: function () {
+                    this.TrueBox = Bridge.box(true, System.Boolean, System.Boolean.toString);
+                    this.FalseBox = Bridge.box(false, System.Boolean, System.Boolean.toString);
+                }
+            },
+            methods: {
+                Box: function (value) {
+                    if (value) {
+                        return MS.Internal.KnownBoxes.BooleanBoxes.TrueBox;
+                    } else {
+                        return MS.Internal.KnownBoxes.BooleanBoxes.FalseBox;
+                    }
+                }
+            }
+        }
+    });
+
     Bridge.define("System.Windows.Markup.IUriContext", {
         $kind: "interface"
     });
@@ -533,6 +576,148 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 Up: 1,
                 Left: 2,
                 Right: 3
+            }
+        }
+    });
+
+    /** @namespace System.Windows.Controls */
+
+    /**
+     * Enum to indicate what Columns or Rows the GridSplitter resizes
+     *
+     * @public
+     * @class System.Windows.Controls.GridResizeBehavior
+     */
+    Bridge.define("System.Windows.Controls.GridResizeBehavior", {
+        $kind: "enum",
+        statics: {
+            fields: {
+                /**
+                 * Determine which columns or rows to resize based on its Alignment.
+                 *
+                 * @static
+                 * @public
+                 * @memberof System.Windows.Controls.GridResizeBehavior
+                 * @constant
+                 * @default 0
+                 * @type System.Windows.Controls.GridResizeBehavior
+                 */
+                BasedOnAlignment: 0,
+                /**
+                 * Resize the current and next Columns or Rows.
+                 *
+                 * @static
+                 * @public
+                 * @memberof System.Windows.Controls.GridResizeBehavior
+                 * @constant
+                 * @default 1
+                 * @type System.Windows.Controls.GridResizeBehavior
+                 */
+                CurrentAndNext: 1,
+                /**
+                 * Resize the previous and current Columns or Rows.
+                 *
+                 * @static
+                 * @public
+                 * @memberof System.Windows.Controls.GridResizeBehavior
+                 * @constant
+                 * @default 2
+                 * @type System.Windows.Controls.GridResizeBehavior
+                 */
+                PreviousAndCurrent: 2,
+                /**
+                 * Resize the previous and next Columns or Rows.
+                 *
+                 * @static
+                 * @public
+                 * @memberof System.Windows.Controls.GridResizeBehavior
+                 * @constant
+                 * @default 3
+                 * @type System.Windows.Controls.GridResizeBehavior
+                 */
+                PreviousAndNext: 3
+            }
+        }
+    });
+
+    /**
+     * Enum to indicate whether GridSplitter resizes Columns or Rows
+     *
+     * @public
+     * @class System.Windows.Controls.GridResizeDirection
+     */
+    Bridge.define("System.Windows.Controls.GridResizeDirection", {
+        $kind: "enum",
+        statics: {
+            fields: {
+                /**
+                 * Determines whether to resize rows or columns based on its Alignment and 
+                 width compared to height
+                 *
+                 * @static
+                 * @public
+                 * @memberof System.Windows.Controls.GridResizeDirection
+                 * @constant
+                 * @default 0
+                 * @type System.Windows.Controls.GridResizeDirection
+                 */
+                Auto: 0,
+                /**
+                 * Resize columns when dragging Splitter.
+                 *
+                 * @static
+                 * @public
+                 * @memberof System.Windows.Controls.GridResizeDirection
+                 * @constant
+                 * @default 1
+                 * @type System.Windows.Controls.GridResizeDirection
+                 */
+                Columns: 1,
+                /**
+                 * Resize rows when dragging Splitter.
+                 *
+                 * @static
+                 * @public
+                 * @memberof System.Windows.Controls.GridResizeDirection
+                 * @constant
+                 * @default 2
+                 * @type System.Windows.Controls.GridResizeDirection
+                 */
+                Rows: 2
+            }
+        }
+    });
+
+    Bridge.define("System.Windows.Controls.GridSplitter.ResizeData", {
+        fields: {
+            ShowsPreview: false,
+            Adorner: null,
+            MinChange: 0,
+            MaxChange: 0,
+            Grid: null,
+            ResizeDirection: 0,
+            ResizeBehavior: 0,
+            Definition1: null,
+            Definition2: null,
+            SplitBehavior: 0,
+            SplitterIndex: 0,
+            Definition1Index: 0,
+            Definition2Index: 0,
+            OriginalDefinition1Length: null,
+            OriginalDefinition2Length: null,
+            OriginalDefinition1ActualLength: 0,
+            OriginalDefinition2ActualLength: 0,
+            SplitterLength: 0
+        }
+    });
+
+    Bridge.define("System.Windows.Controls.GridSplitter.SplitBehavior", {
+        $kind: "enum",
+        statics: {
+            fields: {
+                Split: 0,
+                Resize1: 1,
+                Resize2: 2
             }
         }
     });
@@ -2628,6 +2813,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     System.Windows.EventManager.registeredEvents.Add(key, routedEvent);
                 },
                 RegisterClassHandler: function (classType, routedEvent, handler, handledEventsToo) {
+                    if (handledEventsToo === void 0) { handledEventsToo = false; }
                     routedEvent.RegisterClassHandler(classType, new System.Windows.RoutedEventHandlerItem(handler, handledEventsToo));
                 },
                 GetEvent: function (containingType, eventName) {
@@ -2887,16 +3073,16 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             ctors: {
                 init: function () {
-                    this.Auto = new System.Windows.GridLength(System.Windows.GridUnitType.Auto, 0);
-                    this.Star = new System.Windows.GridLength(System.Windows.GridUnitType.Star, 1);
+                    this.Auto = new System.Windows.GridLength(0, System.Windows.GridUnitType.Auto);
+                    this.Star = new System.Windows.GridLength(1, System.Windows.GridUnitType.Star);
                 }
             },
             methods: {
-                FromPixles: function (pixels) {
-                    return new System.Windows.GridLength(System.Windows.GridUnitType.Pixel, pixels);
+                FromPixels: function (pixels) {
+                    return new System.Windows.GridLength(pixels, System.Windows.GridUnitType.Pixel);
                 },
                 FromStars: function (stars) {
-                    return new System.Windows.GridLength(System.Windows.GridUnitType.Star, stars);
+                    return new System.Windows.GridLength(stars, System.Windows.GridUnitType.Star);
                 }
             }
         },
@@ -2920,7 +3106,9 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             }
         },
         ctors: {
-            ctor: function (gridUnitType, value) {
+            ctor: function (value, gridUnitType) {
+                if (gridUnitType === void 0) { gridUnitType = 1; }
+
                 this.$initialize();
                 this.GridUnitType = gridUnitType;
                 this.Value = value;
@@ -4203,6 +4391,32 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
 
     Bridge.define("System.Windows.ITextMeasurementService", {
         $kind: "interface"
+    });
+
+    Bridge.define("System.Windows.LayoutDoubleUtil", {
+        statics: {
+            fields: {
+                eps: 0
+            },
+            ctors: {
+                init: function () {
+                    this.eps = 1.53E-06;
+                }
+            },
+            methods: {
+                AreClose: function (value1, value2) {
+                    if (value1 === value2) {
+                        return true;
+                    }
+
+                    var diff = value1 - value2;
+                    return (diff < System.Windows.LayoutDoubleUtil.eps) && (diff > -1.53E-06);
+                },
+                LessThan: function (value1, value2) {
+                    return (value1 < value2) && !System.Windows.LayoutDoubleUtil.AreClose(value1, value2);
+                }
+            }
+        }
     });
 
     Bridge.define("System.Windows.LayoutManager", {
@@ -8557,6 +8771,14 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
 
                     return new System.Windows.Rect.$ctor2(System.Windows.Point.op_Subtraction(rect.Location, margin.Location), System.Windows.Size.op_Addition(rect.Size, margin.Size));
                 },
+                Intersect: function ($this, rect) {
+                    var left = Granular.Extensions.DoubleExtensions.Max($this.Left, rect.Left);
+                    var top = Granular.Extensions.DoubleExtensions.Max($this.Top, rect.Top);
+                    var right = Granular.Extensions.DoubleExtensions.Min($this.Right, rect.Right);
+                    var bottom = Granular.Extensions.DoubleExtensions.Min($this.Bottom, rect.Bottom);
+
+                    return new System.Windows.Rect.$ctor1(left, top, right - left, bottom - top);
+                },
                 Union: function ($this, rect) {
                     if (System.Windows.RectExtensions.Contains$1($this, rect)) {
                         return $this;
@@ -10619,7 +10841,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
 
                 if (e.Action === Granular.Collections.NotifyCollectionChangedAction.Reset) {
-                    this.RemoveRange(0, oldItemsCount);
+                    this.RemoveRange(0, this.ItemsCount);
                 }
                 Granular.Extensions.EventHandlerExtensions.Raise$4(Bridge.global.System.Windows.Controls.Primitives.ItemsChangedEventArgs, this.ItemsChanged, this, new System.Windows.Controls.Primitives.ItemsChangedEventArgs(e.Action, e.OldStartingIndex, e.NewStartingIndex, newItemsCount, oldContainersCount));
             },
@@ -10870,13 +11092,23 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
     Bridge.define("System.Windows.Controls.Primitives.DragDeltaEventArgs", {
         inherits: [System.Windows.RoutedEventArgs],
         props: {
-            Delta: null
+            Delta: null,
+            HorizontalChange: {
+                get: function () {
+                    return this.Delta.X;
+                }
+            },
+            VerticalChange: {
+                get: function () {
+                    return this.Delta.Y;
+                }
+            }
         },
         ctors: {
             ctor: function (routedEvent, originalSource, delta) {
                 this.$initialize();
                 System.Windows.RoutedEventArgs.ctor.call(this, routedEvent, originalSource);
-                this.Delta = delta;
+                this.Delta = delta || System.Windows.Point.Empty;
             }
         },
         methods: {
@@ -12419,7 +12651,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
 
                 var pixels = { };
                 if (System.Double.tryParse(text, null, pixels)) {
-                    return System.Windows.GridLength.FromPixles(pixels.v);
+                    return System.Windows.GridLength.FromPixels(pixels.v);
                 }
 
                 throw new Granular.Exception("Can't parse GridLength value \"{0}\"", [text]);
@@ -16576,6 +16808,41 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         }
     });
 
+    Bridge.define("System.Windows.SizeChangedEventArgs", {
+        inherits: [System.Windows.RoutedEventArgs],
+        props: {
+            HeightChanged: {
+                get: function () {
+                    return this.PreviousSize.Height !== this.NewSize.Height;
+                }
+            },
+            NewSize: null,
+            PreviousSize: null,
+            WidthChanged: {
+                get: function () {
+                    return this.PreviousSize.Width !== this.NewSize.Width;
+                }
+            }
+        },
+        ctors: {
+            ctor: function (oldSize, newSize, routedEvent, originalSource) {
+                this.$initialize();
+                System.Windows.RoutedEventArgs.ctor.call(this, routedEvent, originalSource);
+                this.NewSize = newSize;
+                this.PreviousSize = oldSize;
+            }
+        },
+        methods: {
+            InvokeEventHandler: function (handler, target) {
+                if (!(Bridge.is(handler, Function))) {
+                    throw new Granular.Exception("Can't dynamically invoke a non SizeChangedEventHandler, \"{0}\" must override InvokeEventHandler", [Bridge.Reflection.getTypeName(Bridge.getType(this))]);
+                }
+
+                handler(target, this);
+            }
+        }
+    });
+
     Bridge.define("System.Windows.SizeTypeConverter", {
         inherits: [System.Windows.Markup.ITypeConverter],
         alias: ["ConvertFrom", "System$Windows$Markup$ITypeConverter$ConvertFrom"],
@@ -18058,6 +18325,9 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             System$Windows$Controls$IDefinitionBase$Length: {
                 get: function () {
                     return this.Width;
+                },
+                set: function (value) {
+                    this.Width = value;
                 }
             }
         },
@@ -18179,6 +18449,9 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             System$Windows$Controls$IDefinitionBase$Length: {
                 get: function () {
                     return this.Height;
+                },
+                set: function (value) {
+                    this.Height = value;
                 }
             }
         },
@@ -20424,6 +20697,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         inherits: [System.Windows.UIElement,System.Windows.IResourceContainer],
         statics: {
             fields: {
+                SizeChangedEvent: null,
                 InitializedEvent: null,
                 HorizontalAlignmentProperty: null,
                 VerticalAlignmentProperty: null,
@@ -20438,6 +20712,16 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 ActualWidthProperty: null,
                 ActualHeightPropertyKey: null,
                 ActualHeightProperty: null,
+                /**
+                 * FlowDirectionProperty
+                 *
+                 * @static
+                 * @public
+                 * @readonly
+                 * @memberof System.Windows.FrameworkElement
+                 * @type System.Windows.DependencyProperty
+                 */
+                FlowDirectionProperty: null,
                 StyleProperty: null,
                 DefaultStyleKeyProperty: null,
                 FocusVisualStyleProperty: null,
@@ -20449,6 +20733,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             ctors: {
                 init: function () {
+                    this.SizeChangedEvent = System.Windows.EventManager.RegisterRoutedEvent("SizeChanged", System.Windows.RoutingStrategy.Tunnel, Function, System.Windows.FrameworkElement);
                     this.InitializedEvent = System.Windows.EventManager.RegisterRoutedEvent("Initialized", System.Windows.RoutingStrategy.Direct, Function, System.Windows.FrameworkElement);
                     this.HorizontalAlignmentProperty = System.Windows.DependencyProperty.Register("HorizontalAlignment", System.Windows.HorizontalAlignment, System.Windows.FrameworkElement, new System.Windows.FrameworkPropertyMetadata.$ctor3(Bridge.box(System.Windows.HorizontalAlignment.Stretch, System.Windows.HorizontalAlignment, System.Enum.toStringFn(System.Windows.HorizontalAlignment)), 3, $asm.$.System.Windows.FrameworkElement.f1));
                     this.VerticalAlignmentProperty = System.Windows.DependencyProperty.Register("VerticalAlignment", System.Windows.VerticalAlignment, System.Windows.FrameworkElement, new System.Windows.FrameworkPropertyMetadata.$ctor3(Bridge.box(System.Windows.VerticalAlignment.Stretch, System.Windows.VerticalAlignment, System.Enum.toStringFn(System.Windows.VerticalAlignment)), 3, $asm.$.System.Windows.FrameworkElement.f1));
@@ -20463,6 +20748,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     this.ActualWidthProperty = System.Windows.FrameworkElement.ActualWidthPropertyKey.DependencyProperty;
                     this.ActualHeightPropertyKey = System.Windows.DependencyProperty.RegisterReadOnly("ActualHeight", System.Double, System.Windows.FrameworkElement, new System.Windows.FrameworkPropertyMetadata.ctor());
                     this.ActualHeightProperty = System.Windows.FrameworkElement.ActualHeightPropertyKey.DependencyProperty;
+                    this.FlowDirectionProperty = System.Windows.DependencyProperty.RegisterAttached("FlowDirection", System.Windows.FlowDirection, System.Windows.FrameworkElement, new System.Windows.FrameworkPropertyMetadata.$ctor4(Bridge.box(System.Windows.FlowDirection.LeftToRight, System.Windows.FlowDirection, System.Enum.toStringFn(System.Windows.FlowDirection)), 40, System.Windows.FrameworkElement.OnFlowDirectionChanged, System.Windows.FrameworkElement.CoerceFlowDirectionProperty), System.Windows.FrameworkElement.IsValidFlowDirection);
                     this.StyleProperty = System.Windows.DependencyProperty.Register("Style", System.Windows.Style, System.Windows.FrameworkElement, new System.Windows.FrameworkPropertyMetadata.$ctor9(System.Windows.FrameworkPropertyMetadataOptions.AffectsMeasure, $asm.$.System.Windows.FrameworkElement.f5));
                     this.DefaultStyleKeyProperty = System.Windows.DependencyProperty.Register("DefaultStyleKey", System.Object, System.Windows.FrameworkElement, new System.Windows.FrameworkPropertyMetadata.ctor());
                     this.FocusVisualStyleProperty = System.Windows.DependencyProperty.Register("FocusVisualStyle", System.Windows.Style, System.Windows.FrameworkElement, new System.Windows.FrameworkPropertyMetadata.ctor());
@@ -20474,6 +20760,73 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
             },
             methods: {
+                CoerceFlowDirectionProperty: function (d, value) {
+                    var fe = Bridge.as(d, System.Windows.FrameworkElement);
+                    if (fe != null) {
+                        fe.InvalidateArrange();
+                    }
+                    return value;
+                },
+                OnFlowDirectionChanged: function (d, e) {
+                    // Check that d is a FrameworkElement since the property inherits and this can be called
+                    // on non-FEs.
+                    //FrameworkElement fe = d as FrameworkElement;
+                    //if (fe != null)
+                    //{
+                    //    // Cache the new value as a bit to optimize accessing the FlowDirection property's CLR accessor
+                    //    fe.IsRightToLeft = ((FlowDirection)e.NewValue) == FlowDirection.RightToLeft;
+                    //    fe.AreTransformsClean = false;
+                    //}
+                },
+                /**
+                 * Queries the attached property FlowDirection from the given element.
+                 *
+                 * @static
+                 * @public
+                 * @this System.Windows.FrameworkElement
+                 * @memberof System.Windows.FrameworkElement
+                 * @param   {System.Windows.DependencyObject}    element
+                 * @return  {System.Windows.FlowDirection}
+                 * @see {@link DockPanel.DockProperty}
+                 */
+                GetFlowDirection: function (element) {
+                    if (element == null) {
+                        throw new System.ArgumentNullException("element");
+                    }
+                    return System.Nullable.getValue(Bridge.cast(Bridge.unbox(element.GetValue(System.Windows.FrameworkElement.FlowDirectionProperty)), System.Int32));
+                },
+                /**
+                 * Writes the attached property FlowDirection to the given element.
+                 *
+                 * @static
+                 * @public
+                 * @this System.Windows.FrameworkElement
+                 * @memberof System.Windows.FrameworkElement
+                 * @param   {System.Windows.DependencyObject}    element    
+                 * @param   {System.Windows.FlowDirection}       value
+                 * @return  {void}
+                 * @see {@link DockPanel.DockProperty}
+                 */
+                SetFlowDirection: function (element, value) {
+                    if (element == null) {
+                        throw new System.ArgumentNullException("element");
+                    }
+                    element.SetValue(System.Windows.FrameworkElement.FlowDirectionProperty, Bridge.box(value, System.Windows.FlowDirection, System.Enum.toStringFn(System.Windows.FlowDirection)));
+                },
+                /**
+                 * Validates the flow direction property values
+                 *
+                 * @static
+                 * @private
+                 * @this System.Windows.FrameworkElement
+                 * @memberof System.Windows.FrameworkElement
+                 * @param   {System.Object}    o
+                 * @return  {boolean}
+                 */
+                IsValidFlowDirection: function (o) {
+                    var value = System.Nullable.getValue(Bridge.cast(Bridge.unbox(o), System.Int32));
+                    return value === System.Windows.FlowDirection.LeftToRight || value === System.Windows.FlowDirection.RightToLeft;
+                },
                 GetAlignmentOffset: function (container, alignedRectSize, horizontalAlignment, verticalAlignment) {
                     var alignedLeft = container.Left;
                     var alignedTop = container.Top;
@@ -20499,6 +20852,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             }
         },
         fields: {
+            size: null,
             actualWidthValueEntry: null,
             actualHeightValueEntry: null,
             templateChild: null,
@@ -20513,6 +20867,18 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             DataContextChanged: null
         },
         props: {
+            ElementSize: {
+                get: function () {
+                    return this.size;
+                },
+                set: function (value) {
+                    var oldSize = this.size;
+                    this.size = value;
+                    if (this.IsInitialized) {
+                        this.RaiseEvent(new System.Windows.SizeChangedEventArgs(oldSize, value, System.Windows.FrameworkElement.SizeChangedEvent, this));
+                    }
+                }
+            },
             HorizontalAlignment: {
                 get: function () {
                     return System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue(System.Windows.FrameworkElement.HorizontalAlignmentProperty)), System.Int32));
@@ -20599,6 +20965,23 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 },
                 set: function (value) {
                     System.Windows.DependencyPropertyValueEntryExtensions.SetBaseValue(this.actualHeightValueEntry, System.Windows.BaseValueSource.Local, Bridge.box(value, System.Double, System.Double.format, System.Double.getHashCode));
+                }
+            },
+            /**
+             * FlowDirection Property
+             *
+             * @instance
+             * @public
+             * @memberof System.Windows.FrameworkElement
+             * @function FlowDirection
+             * @type System.Windows.FlowDirection
+             */
+            FlowDirection: {
+                get: function () {
+                    return System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue(System.Windows.FrameworkElement.FlowDirectionProperty)), System.Int32));
+                },
+                set: function (value) {
+                    this.SetValue(System.Windows.FrameworkElement.FlowDirectionProperty, Bridge.box(value, System.Windows.FlowDirection, System.Enum.toStringFn(System.Windows.FlowDirection)));
                 }
             },
             ActualSize: null,
@@ -20772,11 +21155,21 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             }
         },
         methods: {
+            addSizeChanged: function (value) {
+                this.AddHandler(System.Windows.FrameworkElement.SizeChangedEvent, value);
+            },
+            removeSizeChanged: function (value) {
+                this.RemoveHandler(System.Windows.FrameworkElement.SizeChangedEvent, value);
+            },
             addInitialized: function (value) {
                 this.AddHandler(System.Windows.FrameworkElement.InitializedEvent, value);
             },
             removeInitialized: function (value) {
                 this.RemoveHandler(System.Windows.FrameworkElement.InitializedEvent, value);
+            },
+            OnVisualBoundsChanged: function () {
+                this.ElementSize = this.VisualBounds.Size;
+                System.Windows.UIElement.prototype.OnVisualBoundsChanged.call(this);
             },
             toString: function () {
                 return Granular.Extensions.StringExtensions.IsNullOrEmpty(this.Name) ? System.String.format("{0}", Bridge.Reflection.getTypeName(Bridge.getType(this))) : System.String.format("{0} ({1})", Bridge.Reflection.getTypeName(Bridge.getType(this)), this.Name);
@@ -23379,6 +23772,84 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         }
     });
 
+    Bridge.define("System.Windows.Documents.Adorner", {
+        inherits: [System.Windows.FrameworkElement],
+        fields: {
+            child: null,
+            visualPathTransform: null
+        },
+        props: {
+            Child: {
+                get: function () {
+                    return this.child;
+                },
+                set: function (value) {
+                    if (Bridge.referenceEquals(this.child, value)) {
+                        return;
+                    }
+
+                    if (this.child != null) {
+                        this.RemoveLogicalChild(this.child);
+                        this.RemoveVisualChild(this.child);
+                    }
+
+                    this.child = value;
+
+                    if (this.child != null) {
+                        this.AddLogicalChild(this.child);
+                        this.AddVisualChild(this.child);
+                    }
+
+                    this.InvalidateMeasure();
+                }
+            },
+            AdornedElement: null
+        },
+        ctors: {
+            ctor: function (adornedElement) {
+                this.$initialize();
+                System.Windows.FrameworkElement.ctor.call(this);
+                this.AdornedElement = adornedElement;
+            }
+        },
+        methods: {
+            MeasureOverride: function (availableSize) {
+                if (this.Child == null) {
+                    return System.Windows.Size.Zero;
+                }
+
+                this.Child.Measure(this.AdornedElement.RenderSize);
+                return this.AdornedElement.RenderSize;
+            },
+            ArrangeOverride: function (finalSize) {
+                if (this.Child != null) {
+                    this.Child.Arrange(new System.Windows.Rect.$ctor3(finalSize));
+                }
+
+                this.visualPathTransform.SetValue$3();
+
+                return finalSize;
+            },
+            OnVisualParentChanged: function (oldVisualParent, newVisualParent) {
+                System.Windows.FrameworkElement.prototype.OnVisualParentChanged.call(this, oldVisualParent, newVisualParent);
+
+                if (oldVisualParent != null) {
+                    this.visualPathTransform.dispose();
+                    this.RenderTransform = System.Windows.Media.Transform.Identity;
+                }
+
+                if (newVisualParent != null) {
+                    this.visualPathTransform = new System.Windows.Documents.Adorner.VisualPathTransform(this.AdornedElement, newVisualParent.VisualParent);
+                    this.RenderTransform = this.visualPathTransform;
+                }
+            },
+            Arrange$1: function () {
+                this.Arrange(new System.Windows.Rect.$ctor3(this.AdornedElement.RenderSize));
+                this.visualPathTransform.SetValue$3();
+            }
+        }
+    });
+
     Bridge.define("System.Windows.Controls.Image", {
         inherits: [System.Windows.FrameworkElement],
         statics: {
@@ -24994,84 +25465,6 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
 
                 return System.Windows.DataTriggerCondition.Register(element, this.Binding, this.Value);
-            }
-        }
-    });
-
-    Bridge.define("System.Windows.Documents.Adorner", {
-        inherits: [System.Windows.FrameworkElement],
-        fields: {
-            child: null,
-            visualPathTransform: null
-        },
-        props: {
-            Child: {
-                get: function () {
-                    return this.child;
-                },
-                set: function (value) {
-                    if (Bridge.referenceEquals(this.child, value)) {
-                        return;
-                    }
-
-                    if (this.child != null) {
-                        this.RemoveLogicalChild(this.child);
-                        this.RemoveVisualChild(this.child);
-                    }
-
-                    this.child = value;
-
-                    if (this.child != null) {
-                        this.AddLogicalChild(this.child);
-                        this.AddVisualChild(this.child);
-                    }
-
-                    this.InvalidateMeasure();
-                }
-            },
-            AdornedElement: null
-        },
-        ctors: {
-            ctor: function (adornedElement) {
-                this.$initialize();
-                System.Windows.FrameworkElement.ctor.call(this);
-                this.AdornedElement = adornedElement;
-            }
-        },
-        methods: {
-            MeasureOverride: function (availableSize) {
-                if (this.Child == null) {
-                    return System.Windows.Size.Zero;
-                }
-
-                this.Child.Measure(this.AdornedElement.RenderSize);
-                return this.AdornedElement.RenderSize;
-            },
-            ArrangeOverride: function (finalSize) {
-                if (this.Child != null) {
-                    this.Child.Arrange(new System.Windows.Rect.$ctor3(finalSize));
-                }
-
-                this.visualPathTransform.SetValue$3();
-
-                return finalSize;
-            },
-            OnVisualParentChanged: function (oldVisualParent, newVisualParent) {
-                System.Windows.FrameworkElement.prototype.OnVisualParentChanged.call(this, oldVisualParent, newVisualParent);
-
-                if (oldVisualParent != null) {
-                    this.visualPathTransform.dispose();
-                    this.RenderTransform = System.Windows.Media.Transform.Identity;
-                }
-
-                if (newVisualParent != null) {
-                    this.visualPathTransform = new System.Windows.Documents.Adorner.VisualPathTransform(this.AdornedElement, newVisualParent.VisualParent);
-                    this.RenderTransform = this.visualPathTransform;
-                }
-            },
-            Arrange$1: function () {
-                this.Arrange(new System.Windows.Rect.$ctor3(this.AdornedElement.RenderSize));
-                this.visualPathTransform.SetValue$3();
             }
         }
     });
@@ -27684,6 +28077,208 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         }
     });
 
+    Bridge.define("System.Windows.Controls.Primitives.Thumb", {
+        inherits: [System.Windows.Controls.Control],
+        statics: {
+            fields: {
+                DragStartedEvent: null,
+                DragDeltaEvent: null,
+                DragCompletedEvent: null,
+                IsDraggingPropertyKey: null,
+                IsDraggingProperty: null
+            },
+            ctors: {
+                init: function () {
+                    this.DragStartedEvent = System.Windows.EventManager.RegisterRoutedEvent("DragStarted", System.Windows.RoutingStrategy.Bubble, Function, System.Windows.Controls.Primitives.Thumb);
+                    this.DragDeltaEvent = System.Windows.EventManager.RegisterRoutedEvent("DragDelta", System.Windows.RoutingStrategy.Bubble, Function, System.Windows.Controls.Primitives.Thumb);
+                    this.DragCompletedEvent = System.Windows.EventManager.RegisterRoutedEvent("DragCompleted", System.Windows.RoutingStrategy.Bubble, Function, System.Windows.Controls.Primitives.Thumb);
+                    this.IsDraggingPropertyKey = System.Windows.DependencyProperty.RegisterReadOnly("IsDragging", System.Boolean, System.Windows.Controls.Primitives.Thumb, new System.Windows.FrameworkPropertyMetadata.$ctor8(System.Windows.FrameworkPropertyMetadataOptions.AffectsVisualState));
+                    this.IsDraggingProperty = System.Windows.Controls.Primitives.Thumb.IsDraggingPropertyKey.DependencyProperty;
+                },
+                ctor: function () {
+                    System.Windows.UIElement.FocusableProperty.OverrideMetadata(System.Windows.Controls.Primitives.Thumb, new System.Windows.FrameworkPropertyMetadata.$ctor1(Bridge.box(false, System.Boolean, System.Boolean.toString)));
+                    System.Windows.FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(System.Windows.Controls.Primitives.Thumb, new System.Windows.FrameworkPropertyMetadata.$ctor1(new System.Windows.StyleKey(System.Windows.Controls.Primitives.Thumb)));
+                }
+            }
+        },
+        fields: {
+            dragStartPosition: null
+        },
+        props: {
+            IsDragging: {
+                get: function () {
+                    return System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue$1(System.Windows.Controls.Primitives.Thumb.IsDraggingPropertyKey)), System.Boolean));
+                },
+                set: function (value) {
+                    this.SetValue$1(System.Windows.Controls.Primitives.Thumb.IsDraggingPropertyKey, Bridge.box(value, System.Boolean, System.Boolean.toString));
+                }
+            }
+        },
+        methods: {
+            addDragStarted: function (value) {
+                this.AddHandler(System.Windows.Controls.Primitives.Thumb.DragStartedEvent, value);
+            },
+            removeDragStarted: function (value) {
+                this.RemoveHandler(System.Windows.Controls.Primitives.Thumb.DragStartedEvent, value);
+            },
+            addDragDelta: function (value) {
+                this.AddHandler(System.Windows.Controls.Primitives.Thumb.DragDeltaEvent, value);
+            },
+            removeDragDelta: function (value) {
+                this.RemoveHandler(System.Windows.Controls.Primitives.Thumb.DragDeltaEvent, value);
+            },
+            addDragCompleted: function (value) {
+                this.AddHandler(System.Windows.Controls.Primitives.Thumb.DragCompletedEvent, value);
+            },
+            removeDragCompleted: function (value) {
+                this.RemoveHandler(System.Windows.Controls.Primitives.Thumb.DragCompletedEvent, value);
+            },
+            OnMouseDown: function (e) {
+                if (e.ChangedButton === System.Windows.Input.MouseButton.Left) {
+                    e.MouseDevice.Capture(this);
+                    this.dragStartPosition = e.GetPosition(Bridge.cast(this.VisualParent, System.Windows.IInputElement));
+
+                    this.IsDragging = true;
+
+                    var dragStartedEventArgs = new System.Windows.Controls.Primitives.DragStartedEventArgs(System.Windows.Controls.Primitives.Thumb.DragStartedEvent, this);
+                    this.RaiseEvent(dragStartedEventArgs);
+
+                    e.Handled = dragStartedEventArgs.Handled;
+                }
+            },
+            OnMouseMove: function (e) {
+                if (this.IsDragging) {
+                    var currentPosition = e.GetPosition(Bridge.cast(this.VisualParent, System.Windows.IInputElement));
+                    // We will fire DragDelta event only when the mouse is really moved
+                    if (System.Windows.Point.op_Inequality(currentPosition, this.dragStartPosition)) {
+                        e.Handled = true;
+                        var dragDeltaEventArgs = new System.Windows.Controls.Primitives.DragDeltaEventArgs(System.Windows.Controls.Primitives.Thumb.DragDeltaEvent, this, System.Windows.Point.op_Subtraction(currentPosition, this.dragStartPosition));
+                        this.RaiseEvent(dragDeltaEventArgs);
+                    }
+                }
+            },
+            OnMouseUp: function (e) {
+                if (this.IsDragging) {
+                    e.MouseDevice.ReleaseCapture();
+
+                    this.IsDragging = false;
+
+                    var dragCompletedEventArgs = new System.Windows.Controls.Primitives.DragCompletedEventArgs(System.Windows.Controls.Primitives.Thumb.DragCompletedEvent, this, false);
+                    this.RaiseEvent(dragCompletedEventArgs);
+
+                    e.Handled = dragCompletedEventArgs.Handled;
+                }
+            },
+            UpdateVisualState: function (useTransitions) {
+                System.Windows.VisualStateManager.GoToState(this, this.GetCommonState(), useTransitions);
+                System.Windows.VisualStateManager.GoToState(this, this.GetFocusState(), useTransitions);
+            },
+            GetCommonState: function () {
+                if (!this.IsEnabled) {
+                    return System.Windows.Controls.VisualStates.DisabledState;
+                }
+
+                if (this.IsDragging) {
+                    return System.Windows.Controls.VisualStates.PressedState;
+                }
+
+                if (this.IsMouseOver) {
+                    return System.Windows.Controls.VisualStates.MouseOverState;
+                }
+
+                return System.Windows.Controls.VisualStates.NormalState;
+            },
+            GetFocusState: function () {
+                return this.IsKeyboardFocused ? System.Windows.Controls.VisualStates.FocusedState : System.Windows.Controls.VisualStates.UnfocusedState;
+            }
+        }
+    });
+
+    /**
+     * // Override for <seealso cref="UIElement.OnRenderSizeChanged" />
+    //
+     *
+     * @private
+     * @class System.Windows.Controls.GridSplitter.PreviewAdorner
+     * @augments System.Windows.Documents.Adorner
+     * @see {@link UIElement.OnRenderSizeChanged}
+     */
+    Bridge.define("System.Windows.Controls.GridSplitter.PreviewAdorner", {
+        inherits: [System.Windows.Documents.Adorner],
+        fields: {
+            Translation: null,
+            _decorator: null
+        },
+        props: {
+            OffsetX: {
+                get: function () {
+                    return this.Translation.X;
+                },
+                set: function (value) {
+                    this.Translation.X = value;
+                }
+            },
+            OffsetY: {
+                get: function () {
+                    return this.Translation.Y;
+                },
+                set: function (value) {
+                    this.Translation.Y = value;
+                }
+            }
+        },
+        ctors: {
+            ctor: function (gridSplitter, previewStyle) {
+                this.$initialize();
+                System.Windows.Documents.Adorner.ctor.call(this, gridSplitter);
+                // Create a preview control to overlay on top of the GridSplitter
+                var previewControl = new System.Windows.Controls.Control();
+                previewControl.Style = previewStyle;
+                previewControl.IsEnabled = false;
+
+                // Add a decorator to perform translations
+                this.Translation = new System.Windows.Media.TranslateTransform.ctor();
+                this._decorator = new System.Windows.Controls.Decorator();
+                this._decorator.Child = previewControl;
+                this._decorator.RenderTransform = this.Translation;
+
+                this.AddVisualChild(this._decorator);
+            }
+        },
+        methods: {
+            /**
+             * //   Derived class must implement to support Visual children. The method must return
+            //    the child at the specified index. Index must be between 0 and GetVisualChildrenCount-1.
+            //
+            //    By default a Visual does not have any children.
+            //
+            //  Remark: 
+            //       During this virtual call it is not valid to modify the Visual tree. 
+            //
+             * //  Derived classes override this property to enable the Visual code to enumerate 
+            //  the Visual children. Derived classes need to return the number of children
+            //  from this method.
+            //
+            //    By default a Visual does not have any children.
+            //
+            //  Remark: During this virtual method the Visual tree must not be modified.
+            //
+             *
+             * @instance
+             * @protected
+             * @override
+             * @this System.Windows.Controls.GridSplitter.PreviewAdorner
+             * @memberof System.Windows.Controls.GridSplitter.PreviewAdorner
+             * @param   {System.Windows.Size}    finalSize
+             * @return  {System.Windows.Size}
+             */
+            ArrangeOverride: function (finalSize) {
+                this._decorator.Arrange(new System.Windows.Rect.$ctor2(System.Windows.Point.Zero, finalSize));
+                return finalSize;
+            }
+        }
+    });
+
     Bridge.define("System.Windows.Controls.ItemsControl", {
         inherits: [System.Windows.Controls.Control,System.Windows.Controls.Primitives.IGeneratorHost],
         statics: {
@@ -28197,120 +28792,6 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         }
     });
 
-    Bridge.define("System.Windows.Controls.Primitives.Thumb", {
-        inherits: [System.Windows.Controls.Control],
-        statics: {
-            fields: {
-                DragStartedEvent: null,
-                DragDeltaEvent: null,
-                DragCompletedEvent: null,
-                IsDraggingPropertyKey: null,
-                IsDraggingProperty: null
-            },
-            ctors: {
-                init: function () {
-                    this.DragStartedEvent = System.Windows.EventManager.RegisterRoutedEvent("DragStarted", System.Windows.RoutingStrategy.Bubble, Function, System.Windows.Controls.Primitives.Thumb);
-                    this.DragDeltaEvent = System.Windows.EventManager.RegisterRoutedEvent("DragDelta", System.Windows.RoutingStrategy.Bubble, Function, System.Windows.Controls.Primitives.Thumb);
-                    this.DragCompletedEvent = System.Windows.EventManager.RegisterRoutedEvent("DragCompleted", System.Windows.RoutingStrategy.Bubble, Function, System.Windows.Controls.Primitives.Thumb);
-                    this.IsDraggingPropertyKey = System.Windows.DependencyProperty.RegisterReadOnly("IsDragging", System.Boolean, System.Windows.Controls.Primitives.Thumb, new System.Windows.FrameworkPropertyMetadata.$ctor8(System.Windows.FrameworkPropertyMetadataOptions.AffectsVisualState));
-                    this.IsDraggingProperty = System.Windows.Controls.Primitives.Thumb.IsDraggingPropertyKey.DependencyProperty;
-                },
-                ctor: function () {
-                    System.Windows.UIElement.FocusableProperty.OverrideMetadata(System.Windows.Controls.Primitives.Thumb, new System.Windows.FrameworkPropertyMetadata.$ctor1(Bridge.box(false, System.Boolean, System.Boolean.toString)));
-                    System.Windows.FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(System.Windows.Controls.Primitives.Thumb, new System.Windows.FrameworkPropertyMetadata.$ctor1(new System.Windows.StyleKey(System.Windows.Controls.Primitives.Thumb)));
-                }
-            }
-        },
-        fields: {
-            dragStartPosition: null
-        },
-        props: {
-            IsDragging: {
-                get: function () {
-                    return System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue$1(System.Windows.Controls.Primitives.Thumb.IsDraggingPropertyKey)), System.Boolean));
-                },
-                set: function (value) {
-                    this.SetValue$1(System.Windows.Controls.Primitives.Thumb.IsDraggingPropertyKey, Bridge.box(value, System.Boolean, System.Boolean.toString));
-                }
-            }
-        },
-        methods: {
-            addDragStarted: function (value) {
-                this.AddHandler(System.Windows.Controls.Primitives.Thumb.DragStartedEvent, value);
-            },
-            removeDragStarted: function (value) {
-                this.RemoveHandler(System.Windows.Controls.Primitives.Thumb.DragStartedEvent, value);
-            },
-            addDragDelta: function (value) {
-                this.AddHandler(System.Windows.Controls.Primitives.Thumb.DragDeltaEvent, value);
-            },
-            removeDragDelta: function (value) {
-                this.RemoveHandler(System.Windows.Controls.Primitives.Thumb.DragDeltaEvent, value);
-            },
-            addDragCompleted: function (value) {
-                this.AddHandler(System.Windows.Controls.Primitives.Thumb.DragCompletedEvent, value);
-            },
-            removeDragCompleted: function (value) {
-                this.RemoveHandler(System.Windows.Controls.Primitives.Thumb.DragCompletedEvent, value);
-            },
-            OnMouseDown: function (e) {
-                if (e.ChangedButton === System.Windows.Input.MouseButton.Left) {
-                    e.MouseDevice.Capture(this);
-                    this.dragStartPosition = e.GetPosition(Bridge.cast(this.VisualParent, System.Windows.IInputElement));
-
-                    this.IsDragging = true;
-
-                    var dragStartedEventArgs = new System.Windows.Controls.Primitives.DragStartedEventArgs(System.Windows.Controls.Primitives.Thumb.DragStartedEvent, this);
-                    this.RaiseEvent(dragStartedEventArgs);
-
-                    e.Handled = dragStartedEventArgs.Handled;
-                }
-            },
-            OnMouseMove: function (e) {
-                if (this.IsDragging) {
-                    var DragDeltaEventArgs = new System.Windows.Controls.Primitives.DragDeltaEventArgs(System.Windows.Controls.Primitives.Thumb.DragDeltaEvent, this, System.Windows.Point.op_Subtraction(e.GetPosition(Bridge.cast(this.VisualParent, System.Windows.IInputElement)), this.dragStartPosition));
-                    this.RaiseEvent(DragDeltaEventArgs);
-
-                    e.Handled = DragDeltaEventArgs.Handled;
-                }
-            },
-            OnMouseUp: function (e) {
-                if (this.IsDragging) {
-                    e.MouseDevice.ReleaseCapture();
-
-                    this.IsDragging = false;
-
-                    var dragCompletedEventArgs = new System.Windows.Controls.Primitives.DragCompletedEventArgs(System.Windows.Controls.Primitives.Thumb.DragCompletedEvent, this, false);
-                    this.RaiseEvent(dragCompletedEventArgs);
-
-                    e.Handled = dragCompletedEventArgs.Handled;
-                }
-            },
-            UpdateVisualState: function (useTransitions) {
-                System.Windows.VisualStateManager.GoToState(this, this.GetCommonState(), useTransitions);
-                System.Windows.VisualStateManager.GoToState(this, this.GetFocusState(), useTransitions);
-            },
-            GetCommonState: function () {
-                if (!this.IsEnabled) {
-                    return System.Windows.Controls.VisualStates.DisabledState;
-                }
-
-                if (this.IsDragging) {
-                    return System.Windows.Controls.VisualStates.PressedState;
-                }
-
-                if (this.IsMouseOver) {
-                    return System.Windows.Controls.VisualStates.MouseOverState;
-                }
-
-                return System.Windows.Controls.VisualStates.NormalState;
-            },
-            GetFocusState: function () {
-                return this.IsKeyboardFocused ? System.Windows.Controls.VisualStates.FocusedState : System.Windows.Controls.VisualStates.UnfocusedState;
-            }
-        }
-    });
-
     Bridge.define("System.Windows.Controls.Primitives.UniformGrid", {
         inherits: [System.Windows.Controls.Panel],
         statics: {
@@ -28621,7 +29102,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     this.SetValue(System.Windows.Controls.StackPanel.OrientationProperty, Bridge.box(value, System.Windows.Controls.Orientation, System.Enum.toStringFn(System.Windows.Controls.Orientation)));
                 }
             },
-            FlowDirection: {
+            FlowDirection$1: {
                 get: function () {
                     return System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue(System.Windows.Controls.StackPanel.FlowDirectionProperty)), System.Int32));
                 },
@@ -28631,7 +29112,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             IsNormalFlow: {
                 get: function () {
-                    return this.FlowDirection === System.Windows.FlowDirection.LeftToRight || this.FlowDirection === System.Windows.FlowDirection.TopDown;
+                    return this.FlowDirection$1 === System.Windows.FlowDirection.LeftToRight || this.FlowDirection$1 === System.Windows.FlowDirection.TopDown;
                 }
             }
         },
@@ -28684,6 +29165,8 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     this.measuredCrossLength = panelCrossLength;
                 }
 
+                var panelArrangeBounds = new System.Windows.Rect.$ctor3(finalSize);
+
                 var childrenMainLength = 0;
                 $t1 = Bridge.getEnumerator(this.Children);
                 try {
@@ -28691,8 +29174,9 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                         var child1 = $t1.Current;
                         var childMainLength = this.GetMainLength(child1.DesiredSize);
                         var childMainStart = this.IsNormalFlow ? childrenMainLength : panelMainLength - childrenMainLength - childMainLength;
+                        var childArrangeRect = System.Windows.RectExtensions.Intersect(System.Windows.Controls.StackPanel.CreateRect(this.Orientation, childMainStart, 0, childMainLength, panelCrossLength), panelArrangeBounds);
 
-                        child1.Arrange(System.Windows.Controls.StackPanel.CreateRect(this.Orientation, childMainStart, 0, childMainLength, panelCrossLength));
+                        child1.Arrange(childArrangeRect);
 
                         childrenMainLength += childMainLength;
                     }
@@ -30183,6 +30667,730 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
     Bridge.apply($asm.$.System.Windows.Controls.HeaderedContentControl, {
         f1: function (sender, e) {
             Bridge.cast(sender, System.Windows.Controls.HeaderedContentControl).OnHeaderChanged(e);
+        }
+    });
+
+    /**
+     * GridSplitter is used to redistribute space between two adjacent columns or rows.
+     This control, when used in conjunction with Grid, can be used to create flexible 
+     and complex user interfaces
+     *
+     * @public
+     * @class System.Windows.Controls.GridSplitter
+     * @augments System.Windows.Controls.Primitives.Thumb
+     */
+    Bridge.define("System.Windows.Controls.GridSplitter", {
+        inherits: [System.Windows.Controls.Primitives.Thumb],
+        statics: {
+            fields: {
+                /**
+                 * The DependencyProperty for the ResizeDirection property.
+                     Default Value:      GridResizeDirection.Auto
+                 *
+                 * @static
+                 * @public
+                 * @readonly
+                 * @memberof System.Windows.Controls.GridSplitter
+                 * @type System.Windows.DependencyProperty
+                 */
+                ResizeDirectionProperty: null,
+                /**
+                 * The DependencyProperty for the ResizeBehavior property.
+                     Default Value:      GridResizeBehavior.BasedOnAlignment
+                 *
+                 * @static
+                 * @public
+                 * @readonly
+                 * @memberof System.Windows.Controls.GridSplitter
+                 * @type System.Windows.DependencyProperty
+                 */
+                ResizeBehaviorProperty: null,
+                /**
+                 * The DependencyProperty for the ShowsPreview property.
+                     Default Value:      false
+                 *
+                 * @static
+                 * @public
+                 * @readonly
+                 * @memberof System.Windows.Controls.GridSplitter
+                 * @type System.Windows.DependencyProperty
+                 */
+                ShowsPreviewProperty: null,
+                /**
+                 * The DependencyProperty for the PreviewStyle property.
+                     Default Value:      null
+                 *
+                 * @static
+                 * @public
+                 * @readonly
+                 * @memberof System.Windows.Controls.GridSplitter
+                 * @type System.Windows.DependencyProperty
+                 */
+                PreviewStyleProperty: null,
+                /**
+                 * The DependencyProperty for the KeyboardIncrement property.
+                     Default Value:      10.0
+                 *
+                 * @static
+                 * @public
+                 * @readonly
+                 * @memberof System.Windows.Controls.GridSplitter
+                 * @type System.Windows.DependencyProperty
+                 */
+                KeyboardIncrementProperty: null,
+                /**
+                 * The DependencyProperty for the DragIncrement property.
+                     Default Value:      1.0
+                 *
+                 * @static
+                 * @public
+                 * @readonly
+                 * @memberof System.Windows.Controls.GridSplitter
+                 * @type System.Windows.DependencyProperty
+                 */
+                DragIncrementProperty: null
+            },
+            ctors: {
+                init: function () {
+                    this.ResizeDirectionProperty = System.Windows.DependencyProperty.Register("ResizeDirection", System.Windows.Controls.GridResizeDirection, System.Windows.Controls.GridSplitter, new System.Windows.FrameworkPropertyMetadata.$ctor6(Bridge.box(System.Windows.Controls.GridResizeDirection.Auto, System.Windows.Controls.GridResizeDirection, System.Enum.toStringFn(System.Windows.Controls.GridResizeDirection)), System.Windows.Controls.GridSplitter.UpdateCursor), System.Windows.Controls.GridSplitter.IsValidResizeDirection);
+                    this.ResizeBehaviorProperty = System.Windows.DependencyProperty.Register("ResizeBehavior", System.Windows.Controls.GridResizeBehavior, System.Windows.Controls.GridSplitter, new System.Windows.FrameworkPropertyMetadata.$ctor1(Bridge.box(System.Windows.Controls.GridResizeBehavior.BasedOnAlignment, System.Windows.Controls.GridResizeBehavior, System.Enum.toStringFn(System.Windows.Controls.GridResizeBehavior))), System.Windows.Controls.GridSplitter.IsValidResizeBehavior);
+                    this.ShowsPreviewProperty = System.Windows.DependencyProperty.Register("ShowsPreview", System.Boolean, System.Windows.Controls.GridSplitter, new System.Windows.FrameworkPropertyMetadata.$ctor1(MS.Internal.KnownBoxes.BooleanBoxes.FalseBox));
+                    this.PreviewStyleProperty = System.Windows.DependencyProperty.Register("PreviewStyle", System.Windows.Style, System.Windows.Controls.GridSplitter, new System.Windows.FrameworkPropertyMetadata.$ctor1(null));
+                    this.KeyboardIncrementProperty = System.Windows.DependencyProperty.Register("KeyboardIncrement", System.Double, System.Windows.Controls.GridSplitter, new System.Windows.FrameworkPropertyMetadata.$ctor1(Bridge.box(10.0, System.Double, System.Double.format, System.Double.getHashCode)), System.Windows.Controls.GridSplitter.IsValidDelta);
+                    this.DragIncrementProperty = System.Windows.DependencyProperty.Register("DragIncrement", System.Double, System.Windows.Controls.GridSplitter, new System.Windows.FrameworkPropertyMetadata.$ctor1(Bridge.box(1.0, System.Double, System.Double.format, System.Double.getHashCode)), System.Windows.Controls.GridSplitter.IsValidDelta);
+                },
+                ctor: function () {
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.Controls.GridSplitter, System.Windows.Controls.Primitives.Thumb.DragStartedEvent, System.Windows.Controls.GridSplitter.OnDragStarted);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.Controls.GridSplitter, System.Windows.Controls.Primitives.Thumb.DragDeltaEvent, System.Windows.Controls.GridSplitter.OnDragDelta);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.Controls.GridSplitter, System.Windows.Controls.Primitives.Thumb.DragCompletedEvent, System.Windows.Controls.GridSplitter.OnDragCompleted);
+
+                    System.Windows.FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(System.Windows.Controls.GridSplitter, new System.Windows.FrameworkPropertyMetadata.$ctor1(new System.Windows.StyleKey(System.Windows.Controls.GridSplitter)));
+                    //_dType = DependencyObjectType.FromSystemTypeInternal(typeof(GridSplitter));
+
+                    System.Windows.UIElement.FocusableProperty.OverrideMetadata(System.Windows.Controls.GridSplitter, new System.Windows.FrameworkPropertyMetadata.$ctor1(MS.Internal.KnownBoxes.BooleanBoxes.TrueBox));
+                    System.Windows.FrameworkElement.HorizontalAlignmentProperty.OverrideMetadata(System.Windows.Controls.GridSplitter, new System.Windows.FrameworkPropertyMetadata.$ctor1(Bridge.box(System.Windows.HorizontalAlignment.Right, System.Windows.HorizontalAlignment, System.Enum.toStringFn(System.Windows.HorizontalAlignment))));
+
+                    // Cursor depends on ResizeDirection, ActualWidth, and ActualHeight 
+                    System.Windows.FrameworkElement.CursorProperty.OverrideMetadata(System.Windows.Controls.GridSplitter, new System.Windows.FrameworkPropertyMetadata.$ctor12(null, System.Windows.Controls.GridSplitter.CoerceCursor));
+
+                    //ControlsTraceLogger.AddControl(TelemetryControls.GridSplitter);
+                }
+            },
+            methods: {
+                UpdateCursor: function (o, e) {
+                    o.CoerceValue(System.Windows.FrameworkElement.CursorProperty);
+                },
+                CoerceCursor: function (o, value) {
+                    var splitter = Bridge.cast(o, System.Windows.Controls.GridSplitter);
+
+                    switch (splitter.GetEffectiveResizeDirection()) {
+                        case System.Windows.Controls.GridResizeDirection.Columns: 
+                            return System.Windows.Input.Cursors.SizeWE;
+                        case System.Windows.Controls.GridResizeDirection.Rows: 
+                            return System.Windows.Input.Cursors.SizeNS;
+                    }
+
+                    //bool hasModifiers;
+                    //BaseValueSourceInternal vs = splitter.GetValueSource(CursorProperty, null, out hasModifiers);
+                    //if (value == null && vs == BaseValueSourceInternal.Default)
+                    //{
+                    //    switch (splitter.GetEffectiveResizeDirection())
+                    //    {
+                    //        case GridResizeDirection.Columns:
+                    //            return Cursors.SizeWE;
+                    //        case GridResizeDirection.Rows:
+                    //            return Cursors.SizeNS;
+                    //    }
+                    //}
+                    return value;
+                },
+                IsValidResizeDirection: function (o) {
+                    var resizeDirection = System.Nullable.getValue(Bridge.cast(Bridge.unbox(o), System.Int32));
+                    return resizeDirection === System.Windows.Controls.GridResizeDirection.Auto || resizeDirection === System.Windows.Controls.GridResizeDirection.Columns || resizeDirection === System.Windows.Controls.GridResizeDirection.Rows;
+                },
+                IsValidResizeBehavior: function (o) {
+                    var resizeBehavior = System.Nullable.getValue(Bridge.cast(Bridge.unbox(o), System.Int32));
+                    return resizeBehavior === System.Windows.Controls.GridResizeBehavior.BasedOnAlignment || resizeBehavior === System.Windows.Controls.GridResizeBehavior.CurrentAndNext || resizeBehavior === System.Windows.Controls.GridResizeBehavior.PreviousAndCurrent || resizeBehavior === System.Windows.Controls.GridResizeBehavior.PreviousAndNext;
+                },
+                IsValidDelta: function (o) {
+                    var delta = System.Nullable.getValue(Bridge.cast(Bridge.unbox(o), System.Double));
+                    return delta > 0.0 && !(delta === Number.POSITIVE_INFINITY);
+                },
+                OnDragStarted: function (sender, e) {
+                    var splitter = Bridge.as(sender, System.Windows.Controls.GridSplitter);
+                    splitter.OnDragStarted(e);
+                },
+                OnDragDelta: function (sender, e) {
+                    var splitter = Bridge.as(sender, System.Windows.Controls.GridSplitter);
+                    splitter.OnDragDelta(e);
+                },
+                OnDragCompleted: function (sender, e) {
+                    var splitter = Bridge.as(sender, System.Windows.Controls.GridSplitter);
+                    splitter.OnDragCompleted(e);
+                },
+                IsStar: function (definition) {
+                    return definition.System$Windows$Controls$IDefinitionBase$Length.IsStar;
+                },
+                GetGridDefinition: function (grid, index, direction) {
+                    return direction === System.Windows.Controls.GridResizeDirection.Columns ? Bridge.cast(grid.ColumnDefinitions.getItem(index), System.Windows.Controls.IDefinitionBase) : Bridge.cast(grid.RowDefinitions.getItem(index), System.Windows.Controls.IDefinitionBase);
+                },
+                SetDefinitionLength: function (definition, length) {
+                    definition.System$Windows$Controls$IDefinitionBase$Length = length;
+                    definition.System$Windows$Controls$IDefinitionBase$ActualLength = length.Value;
+                }
+            }
+        },
+        fields: {
+            _resizeData: null
+        },
+        props: {
+            /**
+             * Indicates whether the Splitter resizes the Columns, Rows, or Both.
+             *
+             * @instance
+             * @public
+             * @memberof System.Windows.Controls.GridSplitter
+             * @function ResizeDirection
+             * @type System.Windows.Controls.GridResizeDirection
+             */
+            ResizeDirection: {
+                get: function () {
+                    return System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue(System.Windows.Controls.GridSplitter.ResizeDirectionProperty)), System.Int32));
+                },
+                set: function (value) {
+                    this.SetValue(System.Windows.Controls.GridSplitter.ResizeDirectionProperty, Bridge.box(value, System.Windows.Controls.GridResizeDirection, System.Enum.toStringFn(System.Windows.Controls.GridResizeDirection)));
+                }
+            },
+            /**
+             * Indicates which Columns or Rows the Splitter resizes.
+             *
+             * @instance
+             * @public
+             * @memberof System.Windows.Controls.GridSplitter
+             * @function ResizeBehavior
+             * @type System.Windows.Controls.GridResizeBehavior
+             */
+            ResizeBehavior: {
+                get: function () {
+                    return System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue(System.Windows.Controls.GridSplitter.ResizeBehaviorProperty)), System.Int32));
+                },
+                set: function (value) {
+                    this.SetValue(System.Windows.Controls.GridSplitter.ResizeBehaviorProperty, Bridge.box(value, System.Windows.Controls.GridResizeBehavior, System.Enum.toStringFn(System.Windows.Controls.GridResizeBehavior)));
+                }
+            },
+            /**
+             * Indicates whether to Preview the column resizing without updating layout.
+             *
+             * @instance
+             * @public
+             * @memberof System.Windows.Controls.GridSplitter
+             * @function ShowsPreview
+             * @type boolean
+             */
+            ShowsPreview: {
+                get: function () {
+                    return System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue(System.Windows.Controls.GridSplitter.ShowsPreviewProperty)), System.Boolean));
+                },
+                set: function (value) {
+                    this.SetValue(System.Windows.Controls.GridSplitter.ShowsPreviewProperty, MS.Internal.KnownBoxes.BooleanBoxes.Box(value));
+                }
+            },
+            /**
+             * The Style used to render the Preview.
+             *
+             * @instance
+             * @public
+             * @memberof System.Windows.Controls.GridSplitter
+             * @function PreviewStyle
+             * @type System.Windows.Style
+             */
+            PreviewStyle: {
+                get: function () {
+                    return Bridge.cast(this.GetValue(System.Windows.Controls.GridSplitter.PreviewStyleProperty), System.Windows.Style);
+                },
+                set: function (value) {
+                    this.SetValue(System.Windows.Controls.GridSplitter.PreviewStyleProperty, value);
+                }
+            },
+            /**
+             * The Distance to move the splitter when pressing the Keyboard arrow keys
+             *
+             * @instance
+             * @public
+             * @memberof System.Windows.Controls.GridSplitter
+             * @function KeyboardIncrement
+             * @type number
+             */
+            KeyboardIncrement: {
+                get: function () {
+                    return System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue(System.Windows.Controls.GridSplitter.KeyboardIncrementProperty)), System.Double));
+                },
+                set: function (value) {
+                    this.SetValue(System.Windows.Controls.GridSplitter.KeyboardIncrementProperty, Bridge.box(value, System.Double, System.Double.format, System.Double.getHashCode));
+                }
+            },
+            /**
+             * Restricts splitter to move a multiple of the specified units.
+             *
+             * @instance
+             * @public
+             * @memberof System.Windows.Controls.GridSplitter
+             * @function DragIncrement
+             * @type number
+             */
+            DragIncrement: {
+                get: function () {
+                    return System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue(System.Windows.Controls.GridSplitter.DragIncrementProperty)), System.Double));
+                },
+                set: function (value) {
+                    this.SetValue(System.Windows.Controls.GridSplitter.DragIncrementProperty, Bridge.box(value, System.Double, System.Double.format, System.Double.getHashCode));
+                }
+            },
+            Parent: {
+                get: function () {
+                    return this.LogicalParent;
+                }
+            }
+        },
+        ctors: {
+            /**
+             * Instantiates a new instance of a GridSplitter.
+             *
+             * @instance
+             * @public
+             * @this System.Windows.Controls.GridSplitter
+             * @memberof System.Windows.Controls.GridSplitter
+             * @return  {void}
+             */
+            ctor: function () {
+                this.$initialize();
+                System.Windows.Controls.Primitives.Thumb.ctor.call(this);
+            }
+        },
+        methods: {
+            OnResourcesChanged: function (e) {
+                System.Windows.Controls.Primitives.Thumb.prototype.OnResourcesChanged.call(this, e);
+            },
+            CreateRenderElementContentOverride: function (factory) {
+                return System.Windows.Controls.Primitives.Thumb.prototype.CreateRenderElementContentOverride.call(this, factory);
+            },
+            GetEffectiveResizeDirection: function () {
+                var direction = this.ResizeDirection;
+
+                if (direction === System.Windows.Controls.GridResizeDirection.Auto) {
+                    // When HorizontalAlignment is Left, Right or Center, resize Columns
+                    if (this.HorizontalAlignment !== System.Windows.HorizontalAlignment.Stretch) {
+                        direction = System.Windows.Controls.GridResizeDirection.Columns;
+                    } else if (this.VerticalAlignment !== System.Windows.VerticalAlignment.Stretch) {
+                        direction = System.Windows.Controls.GridResizeDirection.Rows;
+                    } else if (this.ActualWidth <= this.ActualHeight) {
+                        direction = System.Windows.Controls.GridResizeDirection.Columns;
+                    } else {
+                        direction = System.Windows.Controls.GridResizeDirection.Rows;
+                    }
+
+                }
+                return direction;
+            },
+            GetEffectiveResizeBehavior: function (direction) {
+                var resizeBehavior = this.ResizeBehavior;
+
+                if (resizeBehavior === System.Windows.Controls.GridResizeBehavior.BasedOnAlignment) {
+                    if (direction === System.Windows.Controls.GridResizeDirection.Columns) {
+                        switch (this.HorizontalAlignment) {
+                            case System.Windows.HorizontalAlignment.Left: 
+                                resizeBehavior = System.Windows.Controls.GridResizeBehavior.PreviousAndCurrent;
+                                break;
+                            case System.Windows.HorizontalAlignment.Right: 
+                                resizeBehavior = System.Windows.Controls.GridResizeBehavior.CurrentAndNext;
+                                break;
+                            default: 
+                                resizeBehavior = System.Windows.Controls.GridResizeBehavior.PreviousAndNext;
+                                break;
+                        }
+                    } else {
+                        switch (this.VerticalAlignment) {
+                            case System.Windows.VerticalAlignment.Top: 
+                                resizeBehavior = System.Windows.Controls.GridResizeBehavior.PreviousAndCurrent;
+                                break;
+                            case System.Windows.VerticalAlignment.Bottom: 
+                                resizeBehavior = System.Windows.Controls.GridResizeBehavior.CurrentAndNext;
+                                break;
+                            default: 
+                                resizeBehavior = System.Windows.Controls.GridResizeBehavior.PreviousAndNext;
+                                break;
+                        }
+                    }
+                }
+                return resizeBehavior;
+            },
+            RemovePreviewAdorner: function () {
+                // Remove the preview grid from the adorner
+                if (this._resizeData.Adorner != null) {
+                    var layer = Bridge.as(this._resizeData.Adorner.VisualParent, System.Windows.Documents.AdornerLayer);
+                    layer.Remove(this._resizeData.Adorner);
+                }
+            },
+            InitializeData: function (ShowsPreview) {
+                var grid = Bridge.as(this.Parent, System.Windows.Controls.Grid);
+
+                // If not in a grid or can't resize, do nothing
+                if (grid != null) {
+                    // Setup data used for resizing
+                    this._resizeData = new System.Windows.Controls.GridSplitter.ResizeData();
+                    this._resizeData.Grid = grid;
+                    this._resizeData.ShowsPreview = ShowsPreview;
+                    this._resizeData.ResizeDirection = this.GetEffectiveResizeDirection();
+                    this._resizeData.ResizeBehavior = this.GetEffectiveResizeBehavior(this._resizeData.ResizeDirection);
+                    this._resizeData.SplitterLength = Math.min(this.ActualWidth, this.ActualHeight);
+
+                    // Store the rows and columns to resize on drag events
+                    if (!this.SetupDefinitionsToResize()) {
+                        // Unable to resize, clear data
+                        this._resizeData = null;
+                        return;
+                    }
+
+                    // Setup the preview in the adorner if ShowsPreview is true
+                    this.SetupPreview();
+                }
+            },
+            SetupDefinitionsToResize: function () {
+                var splitterIndex, index1, index2;
+
+                var gridSpan = System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue(this._resizeData.ResizeDirection === System.Windows.Controls.GridResizeDirection.Columns ? System.Windows.Controls.Grid.ColumnSpanProperty : System.Windows.Controls.Grid.RowSpanProperty)), System.Int32));
+
+                if (gridSpan === 1) {
+                    splitterIndex = System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.GetValue(this._resizeData.ResizeDirection === System.Windows.Controls.GridResizeDirection.Columns ? System.Windows.Controls.Grid.ColumnProperty : System.Windows.Controls.Grid.RowProperty)), System.Int32));
+
+                    // Select the columns based on Behavior
+                    switch (this._resizeData.ResizeBehavior) {
+                        case System.Windows.Controls.GridResizeBehavior.PreviousAndCurrent: 
+                            // get current and previous
+                            index1 = (splitterIndex - 1) | 0;
+                            index2 = splitterIndex;
+                            break;
+                        case System.Windows.Controls.GridResizeBehavior.CurrentAndNext: 
+                            // get current and next
+                            index1 = splitterIndex;
+                            index2 = (splitterIndex + 1) | 0;
+                            break;
+                        default:  // GridResizeBehavior.PreviousAndNext
+                            // get previous and next
+                            index1 = (splitterIndex - 1) | 0;
+                            index2 = (splitterIndex + 1) | 0;
+                            break;
+                    }
+
+                    // Get # of rows/columns in the resize direction
+                    var count = (this._resizeData.ResizeDirection === System.Windows.Controls.GridResizeDirection.Columns) ? this._resizeData.Grid.ColumnDefinitions.Count : this._resizeData.Grid.RowDefinitions.Count;
+
+                    if (index1 >= 0 && index2 < count) {
+                        this._resizeData.SplitterIndex = splitterIndex;
+
+                        this._resizeData.Definition1Index = index1;
+                        this._resizeData.Definition1 = System.Windows.Controls.GridSplitter.GetGridDefinition(this._resizeData.Grid, index1, this._resizeData.ResizeDirection);
+                        this._resizeData.OriginalDefinition1Length = this._resizeData.Definition1.System$Windows$Controls$IDefinitionBase$Length; //save Size if user cancels
+                        this._resizeData.OriginalDefinition1ActualLength = this.GetActualLength(this._resizeData.Definition1);
+
+                        this._resizeData.Definition2Index = index2;
+                        this._resizeData.Definition2 = System.Windows.Controls.GridSplitter.GetGridDefinition(this._resizeData.Grid, index2, this._resizeData.ResizeDirection);
+                        this._resizeData.OriginalDefinition2Length = this._resizeData.Definition2.System$Windows$Controls$IDefinitionBase$Length; //save Size if user cancels
+                        this._resizeData.OriginalDefinition2ActualLength = this.GetActualLength(this._resizeData.Definition2);
+
+                        // Determine how to resize the columns 
+                        var isStar1 = System.Windows.Controls.GridSplitter.IsStar(this._resizeData.Definition1);
+                        var isStar2 = System.Windows.Controls.GridSplitter.IsStar(this._resizeData.Definition2);
+                        if (isStar1 && isStar2) {
+                            // If they are both stars, resize both
+                            this._resizeData.SplitBehavior = System.Windows.Controls.GridSplitter.SplitBehavior.Split;
+                        } else {
+                            // One column is fixed width, resize the first one that is fixed
+                            this._resizeData.SplitBehavior = !isStar1 ? System.Windows.Controls.GridSplitter.SplitBehavior.Resize1 : System.Windows.Controls.GridSplitter.SplitBehavior.Resize2;
+                        }
+
+                        return true;
+                    }
+                }
+                return false;
+            },
+            SetupPreview: function () {
+                if (this._resizeData.ShowsPreview) {
+                    // Get the adorner layer and add an adorner to it
+                    var adornerlayer = System.Windows.Documents.AdornerLayer.GetAdornerLayer(this._resizeData.Grid);
+
+                    // Can't display preview
+                    if (adornerlayer == null) {
+                        return;
+                    }
+
+                    this._resizeData.Adorner = new System.Windows.Controls.GridSplitter.PreviewAdorner(this, this.PreviewStyle);
+                    adornerlayer.Add(this._resizeData.Adorner);
+
+                    // Get constraints on preview's translation
+                    this.GetDeltaConstraints(Bridge.ref(this._resizeData, "MinChange"), Bridge.ref(this._resizeData, "MaxChange"));
+                }
+            },
+            /**
+             * An event announcing that the splitter is no longer focused
+             *
+             * @instance
+             * @protected
+             * @override
+             * @this System.Windows.Controls.GridSplitter
+             * @memberof System.Windows.Controls.GridSplitter
+             * @param   {System.Windows.Input.KeyboardFocusChangedEventArgs}    e
+             * @return  {void}
+             */
+            OnLostKeyboardFocus: function (e) {
+                System.Windows.Controls.Primitives.Thumb.prototype.OnLostKeyboardFocus.call(this, e);
+
+                if (this._resizeData != null) {
+                    this.CancelResize();
+                }
+            },
+            OnDragStarted: function (e) {
+
+                this.InitializeData(this.ShowsPreview);
+            },
+            OnDragDelta: function (e) {
+                if (this._resizeData != null) {
+                    var horizontalChange = e.HorizontalChange;
+                    var verticalChange = e.VerticalChange;
+
+                    // Round change to nearest multiple of DragIncrement
+                    var dragIncrement = this.DragIncrement;
+                    horizontalChange = Bridge.Math.round(horizontalChange / dragIncrement, 0, 6) * dragIncrement;
+                    verticalChange = Bridge.Math.round(verticalChange / dragIncrement, 0, 6) * dragIncrement;
+
+                    if (this._resizeData.ShowsPreview) {
+                        //Set the Translation of the Adorner to the distance from the thumb
+                        if (this._resizeData.ResizeDirection === System.Windows.Controls.GridResizeDirection.Columns) {
+                            this._resizeData.Adorner.OffsetX = Math.min(Math.max(horizontalChange, this._resizeData.MinChange), this._resizeData.MaxChange);
+                        } else {
+                            this._resizeData.Adorner.OffsetY = Math.min(Math.max(verticalChange, this._resizeData.MinChange), this._resizeData.MaxChange);
+                        }
+                    } else {
+                        // Directly update the grid
+                        this.MoveSplitter(horizontalChange, verticalChange);
+                    }
+                }
+            },
+            OnDragCompleted: function (e) {
+                if (this._resizeData != null) {
+                    if (this._resizeData.ShowsPreview) {
+                        // Update the grid
+                        this.MoveSplitter(this._resizeData.Adorner.OffsetX, this._resizeData.Adorner.OffsetY);
+                        this.RemovePreviewAdorner();
+                    }
+
+                    this._resizeData = null;
+                }
+            },
+            /**
+             * This is the method that responds to the KeyDown event.
+             *
+             * @instance
+             * @protected
+             * @override
+             * @this System.Windows.Controls.GridSplitter
+             * @memberof System.Windows.Controls.GridSplitter
+             * @param   {System.Windows.Input.KeyEventArgs}    e    Event Arguments
+             * @return  {void}
+             */
+            OnKeyDown: function (e) {
+                var key = e.Key;
+                switch (key) {
+                    case System.Windows.Input.Key.Escape: 
+                        if (this._resizeData != null) {
+                            this.CancelResize();
+                            e.Handled = true;
+                        }
+                        break;
+                    case System.Windows.Input.Key.Left: 
+                        e.Handled = this.KeyboardMoveSplitter(-this.KeyboardIncrement, 0);
+                        break;
+                    case System.Windows.Input.Key.Right: 
+                        e.Handled = this.KeyboardMoveSplitter(this.KeyboardIncrement, 0);
+                        break;
+                    case System.Windows.Input.Key.Up: 
+                        e.Handled = this.KeyboardMoveSplitter(0, -this.KeyboardIncrement);
+                        break;
+                    case System.Windows.Input.Key.Down: 
+                        e.Handled = this.KeyboardMoveSplitter(0, this.KeyboardIncrement);
+                        break;
+                }
+            },
+            CancelResize: function () {
+                // Restore original column/row lengths
+                var grid = Bridge.as(this.Parent, System.Windows.Controls.Grid);
+
+                if (this._resizeData.ShowsPreview) {
+                    this.RemovePreviewAdorner();
+                } else {
+                    System.Windows.Controls.GridSplitter.SetDefinitionLength(this._resizeData.Definition1, this._resizeData.OriginalDefinition1Length);
+                    System.Windows.Controls.GridSplitter.SetDefinitionLength(this._resizeData.Definition2, this._resizeData.OriginalDefinition2Length);
+                }
+
+                this._resizeData = null;
+            },
+            GetActualLength: function (definition) {
+                return definition.System$Windows$Controls$IDefinitionBase$ActualLength;
+            },
+            GetDeltaConstraints: function (minDelta, maxDelta) {
+                var definition1Len = this.GetActualLength(this._resizeData.Definition1);
+                var definition1Min = this._resizeData.Definition1.System$Windows$Controls$IDefinitionBase$MinLength;
+                var definition1Max = this._resizeData.Definition1.System$Windows$Controls$IDefinitionBase$MaxLength;
+
+                var definition2Len = this.GetActualLength(this._resizeData.Definition2);
+                var definition2Min = this._resizeData.Definition2.System$Windows$Controls$IDefinitionBase$MinLength;
+                var definition2Max = this._resizeData.Definition2.System$Windows$Controls$IDefinitionBase$MaxLength;
+
+                //Set MinWidths to be greater than width of splitter
+                if (this._resizeData.SplitterIndex === this._resizeData.Definition1Index) {
+                    definition1Min = Math.max(definition1Min, this._resizeData.SplitterLength);
+                } else if (this._resizeData.SplitterIndex === this._resizeData.Definition2Index) {
+                    definition2Min = Math.max(definition2Min, this._resizeData.SplitterLength);
+                }
+
+                if (this._resizeData.SplitBehavior === System.Windows.Controls.GridSplitter.SplitBehavior.Split) {
+                    // Determine the minimum and maximum the columns can be resized
+                    minDelta.v = -Math.min(definition1Len - definition1Min, definition2Max - definition2Len);
+                    maxDelta.v = Math.min(definition1Max - definition1Len, definition2Len - definition2Min);
+                } else if (this._resizeData.SplitBehavior === System.Windows.Controls.GridSplitter.SplitBehavior.Resize1) {
+                    minDelta.v = definition1Min - definition1Len;
+                    maxDelta.v = definition1Max - definition1Len;
+                } else {
+                    minDelta.v = definition2Len - definition2Max;
+                    maxDelta.v = definition2Len - definition2Min;
+                }
+            },
+            SetLengths: function (definition1Pixels, definition2Pixels) {
+                var $t;
+                // For the case where both definition1 and 2 are stars, update all star values to match their current pixel values
+                if (this._resizeData.SplitBehavior === System.Windows.Controls.GridSplitter.SplitBehavior.Split) {
+                    var definitions = this._resizeData.ResizeDirection === System.Windows.Controls.GridResizeDirection.Columns ? Bridge.cast(this._resizeData.Grid.ColumnDefinitions, System.Collections.IEnumerable) : Bridge.cast(this._resizeData.Grid.RowDefinitions, System.Collections.IEnumerable);
+
+                    var i = 0;
+                    $t = Bridge.getEnumerator(definitions);
+                    try {
+                        while ($t.moveNext()) {
+                            var definition = Bridge.cast($t.Current, System.Windows.Controls.IDefinitionBase);
+                            // For each definition, if it is a star, set is value to ActualLength in stars
+                            // This makes 1 star == 1 pixel in length
+                            if (i === this._resizeData.Definition1Index) {
+                                System.Windows.Controls.GridSplitter.SetDefinitionLength(definition, new System.Windows.GridLength(definition1Pixels, System.Windows.GridUnitType.Star));
+                            } else if (i === this._resizeData.Definition2Index) {
+                                System.Windows.Controls.GridSplitter.SetDefinitionLength(definition, new System.Windows.GridLength(definition2Pixels, System.Windows.GridUnitType.Star));
+                            } else if (System.Windows.Controls.GridSplitter.IsStar(definition)) {
+                                System.Windows.Controls.GridSplitter.SetDefinitionLength(definition, new System.Windows.GridLength(this.GetActualLength(definition), System.Windows.GridUnitType.Star));
+                            }
+
+                            i = (i + 1) | 0;
+                        }
+                    } finally {
+                        if (Bridge.is($t, System.IDisposable)) {
+                            $t.System$IDisposable$dispose();
+                        }
+                    }} else if (this._resizeData.SplitBehavior === System.Windows.Controls.GridSplitter.SplitBehavior.Resize1) {
+                    System.Windows.Controls.GridSplitter.SetDefinitionLength(this._resizeData.Definition1, new System.Windows.GridLength(definition1Pixels));
+                } else {
+                    System.Windows.Controls.GridSplitter.SetDefinitionLength(this._resizeData.Definition2, new System.Windows.GridLength(definition2Pixels));
+                }
+            },
+            MoveSplitter: function (horizontalChange, verticalChange) {
+
+                var delta;
+                //DpiScale dpi = GetDpi();
+
+                // Calculate the offset to adjust the splitter.  If layout rounding is enabled, we
+                // need to round to an integer physical pixel value to avoid round-ups of children that
+                // expand the bounds of the Grid.  In practice this only happens in high dpi because
+                // horizontal/vertical offsets here are never fractional (they correspond to mouse movement
+                // across logical pixels).  Rounding error only creeps in when converting to a physical
+                // display with something other than the logical 96 dpi.
+                if (this._resizeData.ResizeDirection === System.Windows.Controls.GridResizeDirection.Columns) {
+                    delta = horizontalChange;
+                    //if (this.UseLayoutRounding)
+                    //{
+                    //    delta = UIElement.RoundLayoutValue(delta, dpi.DpiScaleX);
+                    //}
+                } else {
+                    delta = verticalChange;
+                    //if (this.UseLayoutRounding)
+                    //{
+                    //    delta = UIElement.RoundLayoutValue(delta, dpi.DpiScaleY);
+                    //}
+                }
+
+                var definition1 = this._resizeData.Definition1;
+                var definition2 = this._resizeData.Definition2;
+                if (definition1 != null && definition2 != null) {
+                    var actualLength1 = this.GetActualLength(definition1);
+                    var actualLength2 = this.GetActualLength(definition2);
+
+                    // When splitting, Check to see if the total pixels spanned by the definitions 
+                    // is the same asbefore starting resize. If not cancel the drag
+                    if (this._resizeData.SplitBehavior === System.Windows.Controls.GridSplitter.SplitBehavior.Split && !System.Windows.LayoutDoubleUtil.AreClose(actualLength1 + actualLength2, this._resizeData.OriginalDefinition1ActualLength + this._resizeData.OriginalDefinition2ActualLength)) {
+                        this.CancelResize();
+                        return;
+                    }
+
+                    var min = { }, max = { };
+                    this.GetDeltaConstraints(min, max);
+
+                    // Flip when the splitter's flow direction isn't the same as the grid's
+                    if (this.FlowDirection !== this._resizeData.Grid.FlowDirection) {
+                        delta = -delta;
+                    }
+
+                    // Constrain Delta to Min/MaxWidth of columns
+                    delta = Math.min(Math.max(delta, min.v), max.v);
+
+                    // With floating point operations there may be loss of precision to some degree. Eg. Adding a very 
+                    // small value to a very large one might result in the small value being ignored. In the following 
+                    // steps there are two floating point operations viz. actualLength1+delta and actualLength2-delta. 
+                    // It is possible that the addition resulted in loss of precision and the delta value was ignored, whereas 
+                    // the subtraction actual absorbed the delta value. This now means that 
+                    // (definition1LengthNew + definition2LengthNewis) 2 factors of precision away from 
+                    // (actualLength1 + actualLength2). This can cause a problem in the subsequent drag iteration where 
+                    // this will be interpreted as the cancellation of the resize operation. To avoid this imprecision we use 
+                    // make definition2LengthNew be a function of definition1LengthNew so that the precision or the loss 
+                    // thereof can be counterbalanced. See DevDiv bug#140228 for a manifestation of this problem.
+
+                    var definition1LengthNew = actualLength1 + delta;
+                    //double definition2LengthNew = actualLength2 - delta;
+                    var definition2LengthNew = actualLength1 + actualLength2 - definition1LengthNew;
+
+                    this.SetLengths(definition1LengthNew, definition2LengthNew);
+
+                    this._resizeData.Grid.InvalidateArrange();
+                }
+            },
+            KeyboardMoveSplitter: function (horizontalChange, verticalChange) {
+                // If moving with the mouse, ignore keyboard motion
+                if (this._resizeData != null) {
+                    return false; // don't handle the event
+                }
+
+                this.InitializeData(false); // don't show preview
+
+                // Check that we are actually able to resize
+                if (this._resizeData == null) {
+                    return false; // don't handle the event
+                }
+
+                // Keyboard keys are unaffected by FlowDirection.
+                if (this.FlowDirection === System.Windows.FlowDirection.RightToLeft) {
+                    horizontalChange = -horizontalChange;
+                }
+
+                this.MoveSplitter(horizontalChange, verticalChange);
+
+                this._resizeData = null;
+
+                return true;
+            }
         }
     });
 
