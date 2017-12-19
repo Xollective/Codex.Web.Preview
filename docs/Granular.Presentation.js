@@ -3176,6 +3176,30 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         $kind: "interface"
     });
 
+    Bridge.define("System.Windows.Input.CommandBinding", {
+        events: {
+            Executed: null
+        },
+        props: {
+            Command: null
+        },
+        ctors: {
+            ctor: function () {
+                this.$initialize();
+            },
+            $ctor1: function (command, executed) {
+                this.$initialize();
+                this.Command = command;
+                this.Executed = executed;
+            }
+        },
+        methods: {
+            OnExecuted: function (sender, e) {
+                !Bridge.staticEquals(this.Executed, null) ? this.Executed(e.Source, e) : null;
+            }
+        }
+    });
+
     Bridge.define("System.Windows.Input.Cursor", {
         props: {
             CursorType: 0,
@@ -4381,6 +4405,48 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         }
     });
 
+    Bridge.define("System.Windows.Input.RoutedCommand", {
+        inherits: [System.Windows.Input.ICommand],
+        statics: {
+            fields: {
+                ExecutedEvent: null
+            },
+            ctors: {
+                init: function () {
+                    this.ExecutedEvent = System.Windows.EventManager.RegisterRoutedEvent("Executed", System.Windows.RoutingStrategy.Bubble, Function, System.Windows.Input.RoutedCommand);
+                }
+            }
+        },
+        events: {
+            CanExecuteChanged: null
+        },
+        props: {
+            Name: null,
+            OwnerType: null
+        },
+        alias: [
+            "addCanExecuteChanged", "System$Windows$Input$ICommand$addCanExecuteChanged",
+            "removeCanExecuteChanged", "System$Windows$Input$ICommand$removeCanExecuteChanged",
+            "CanExecute", "System$Windows$Input$ICommand$CanExecute",
+            "Execute", "System$Windows$Input$ICommand$Execute"
+        ],
+        ctors: {
+            ctor: function (name, ownerType) {
+                this.$initialize();
+                this.Name = name;
+                this.OwnerType = ownerType;
+            }
+        },
+        methods: {
+            CanExecute: function (parameter) {
+                return true;
+            },
+            Execute: function (parameter) {
+                // Execution is handled using routed event
+            }
+        }
+    });
+
     Bridge.define("System.Windows.IPresentationSource", {
         $kind: "interface"
     });
@@ -5194,7 +5260,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
 
                 if (!this.tokens.IsEmpty && System.Nullable.getValue(Bridge.cast(Bridge.unbox(this.tokens.Peek().Id), System.Int32)) === System.Windows.Markup.PropertyPathParser.TokenType.Value) {
-                    return new System.Windows.Markup.XamlName(this.MatchValue());
+                    return System.Windows.Markup.XamlName.FromPrefixedName(this.MatchValue(), namespaces);
                 }
 
                 return System.Windows.Markup.XamlName.Empty;
@@ -12756,6 +12822,10 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         }
     });
 
+    Bridge.define("System.Windows.Input.CommandBindingCollection", {
+        inherits: [System.Collections.Generic.List$1(System.Windows.Input.CommandBinding)]
+    });
+
     Bridge.define("System.Windows.Input.CursorTypeConverter", {
         inherits: [System.Windows.Markup.ITypeConverter],
         alias: ["ConvertFrom", "System$Windows$Markup$ITypeConverter$ConvertFrom"],
@@ -12769,6 +12839,31 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
 
                 throw new Granular.Exception("Can't convert \"{0}\" to Cursor", [value]);
+            }
+        }
+    });
+
+    Bridge.define("System.Windows.Input.ExecutedRoutedEventArgs", {
+        inherits: [System.Windows.RoutedEventArgs],
+        props: {
+            Command: null,
+            Parameter: null
+        },
+        ctors: {
+            ctor: function (command, commandParameter, originalSource) {
+                this.$initialize();
+                System.Windows.RoutedEventArgs.ctor.call(this, System.Windows.Input.RoutedCommand.ExecutedEvent, originalSource);
+                this.Command = command;
+                this.Parameter = commandParameter;
+            }
+        },
+        methods: {
+            InvokeEventHandler: function (handler, target) {
+                if (Bridge.is(handler, Function)) {
+                    handler(target, this);
+                } else {
+                    System.Windows.RoutedEventArgs.prototype.InvokeEventHandler.call(this, handler, target);
+                }
             }
         }
     });
@@ -16260,18 +16355,37 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         statics: {
             methods: {
                 TryGetValue: function (target, propertyName, value) {
-                    var containingType = System.Windows.Markup.XamlNameExtensions.ResolveContainingType(propertyName, Bridge.getType(target));
+                    if (target == null) {
+                        var type = { };
+                        var result = System.Windows.Markup.TypeParser.TryParseType$1(propertyName, type);
+                        value.v = type.v;
+                        return result;
+                    } else if (Bridge.is(target, Function)) {
+                        var propertyInfo = Granular.Extensions.TypeExtensions.GetStaticProperty(Bridge.cast(target, Function), propertyName.MemberName);
+                        if (propertyInfo != null && !Granular.Compatibility.Linq.Enumerable.Any(Bridge.global.System.Object, (propertyInfo.ipi || []))) {
+                            value.v = Bridge.Reflection.midel(propertyInfo.g, null).apply(null, System.Array.init(0, null, System.Object));
+                            return true;
+                        }
 
-                    var dependencyProperty = System.Windows.DependencyProperty.GetProperty(containingType, propertyName.MemberName);
-                    if (dependencyProperty != null && Bridge.is(target, System.Windows.DependencyObject)) {
-                        value.v = Bridge.cast(target, System.Windows.DependencyObject).GetValue(dependencyProperty);
-                        return true;
-                    }
+                        var fieldInfo = Granular.Extensions.TypeExtensions.GetStaticField(Bridge.cast(target, Function), propertyName.MemberName);
+                        if (fieldInfo != null) {
+                            value.v = Bridge.Reflection.fieldAccess(fieldInfo, null);
+                            return true;
+                        }
+                    } else {
+                        var containingType = System.Windows.Markup.XamlNameExtensions.ResolveContainingType(propertyName, Bridge.getType(target));
 
-                    var propertyInfo = Granular.Extensions.TypeExtensions.GetInstanceProperty(containingType, propertyName.MemberName);
-                    if (propertyInfo != null && !Granular.Compatibility.Linq.Enumerable.Any(Bridge.global.System.Object, (propertyInfo.ipi || []))) {
-                        value.v = Bridge.Reflection.midel(propertyInfo.g, Bridge.unbox(target)).apply(null, System.Array.init(0, null, System.Object));
-                        return true;
+                        var dependencyProperty = System.Windows.DependencyProperty.GetProperty(containingType, propertyName.MemberName);
+                        if (dependencyProperty != null && Bridge.is(target, System.Windows.DependencyObject)) {
+                            value.v = Bridge.cast(target, System.Windows.DependencyObject).GetValue(dependencyProperty);
+                            return true;
+                        }
+
+                        var propertyInfo1 = Granular.Extensions.TypeExtensions.GetInstanceProperty(containingType, propertyName.MemberName);
+                        if (propertyInfo1 != null && !Granular.Compatibility.Linq.Enumerable.Any(Bridge.global.System.Object, (propertyInfo1.ipi || []))) {
+                            value.v = Bridge.Reflection.midel(propertyInfo1.g, Bridge.unbox(target)).apply(null, System.Array.init(0, null, System.Object));
+                            return true;
+                        }
                     }
 
                     value.v = null;
@@ -16853,6 +16967,21 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         }
     });
 
+    Bridge.define("System.Windows.StaticExtension", {
+        inherits: [System.Windows.Markup.IMarkupExtension],
+        props: {
+            Member: null
+        },
+        alias: ["ProvideValue", "System$Windows$Markup$IMarkupExtension$ProvideValue"],
+        methods: {
+            ProvideValue: function (context) {
+                var value = { };
+                System.Windows.PropertyPathExtensions.TryGetValue(this.Member, null, value);
+                return value.v;
+            }
+        }
+    });
+
     Bridge.define("System.Windows.StaticResourceExtension", {
         inherits: [System.Windows.Markup.IMarkupExtension],
         statics: {
@@ -17215,7 +17344,9 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 GotKeyboardFocusEvent: null,
                 LostKeyboardFocusEvent: null,
                 GotFocusEvent: null,
-                LostFocusEvent: null
+                LostFocusEvent: null,
+                ExecutedEvent: null,
+                CommandBindingsProperty: null
             },
             ctors: {
                 init: function () {
@@ -17259,29 +17390,33 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     this.LostKeyboardFocusEvent = System.Windows.Input.Keyboard.LostKeyboardFocusEvent.AddOwner(System.Windows.UIElement);
                     this.GotFocusEvent = System.Windows.Input.FocusManager.GotFocusEvent.AddOwner(System.Windows.UIElement);
                     this.LostFocusEvent = System.Windows.Input.FocusManager.LostFocusEvent.AddOwner(System.Windows.UIElement);
+                    this.ExecutedEvent = System.Windows.Input.RoutedCommand.ExecutedEvent.AddOwner(System.Windows.UIElement);
+                    this.CommandBindingsProperty = System.Windows.DependencyProperty.Register("CommandBindings", System.Windows.Input.CommandBindingCollection, System.Windows.UIElement, new System.Windows.PropertyMetadata.$ctor4(null));
                 },
                 ctor: function () {
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.UIElement.ExecutedEvent, $asm.$.System.Windows.UIElement.f14, false);
+
                     System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.MouseEnterEvent, System.Windows.UIElement.OnMouseEnter, false);
                     System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.MouseLeaveEvent, System.Windows.UIElement.OnMouseLeave, false);
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.QueryCursorEvent, $asm.$.System.Windows.UIElement.f14, true);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.QueryCursorEvent, $asm.$.System.Windows.UIElement.f15, true);
 
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.PreviewMouseMoveEvent, $asm.$.System.Windows.UIElement.f15, false);
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.PreviewMouseDownEvent, $asm.$.System.Windows.UIElement.f16, false);
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.PreviewMouseUpEvent, $asm.$.System.Windows.UIElement.f17, false);
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.PreviewMouseWheelEvent, $asm.$.System.Windows.UIElement.f18, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.PreviewMouseMoveEvent, $asm.$.System.Windows.UIElement.f16, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.PreviewMouseDownEvent, $asm.$.System.Windows.UIElement.f17, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.PreviewMouseUpEvent, $asm.$.System.Windows.UIElement.f18, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.PreviewMouseWheelEvent, $asm.$.System.Windows.UIElement.f19, false);
 
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.MouseMoveEvent, $asm.$.System.Windows.UIElement.f19, false);
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.MouseDownEvent, $asm.$.System.Windows.UIElement.f20, false);
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.MouseUpEvent, $asm.$.System.Windows.UIElement.f21, false);
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.MouseWheelEvent, $asm.$.System.Windows.UIElement.f22, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.MouseMoveEvent, $asm.$.System.Windows.UIElement.f20, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.MouseDownEvent, $asm.$.System.Windows.UIElement.f21, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.MouseUpEvent, $asm.$.System.Windows.UIElement.f22, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Mouse.MouseWheelEvent, $asm.$.System.Windows.UIElement.f23, false);
 
                     System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Keyboard.GotKeyboardFocusEvent, System.Windows.UIElement.OnGotKeyboardFocus, true);
                     System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Keyboard.LostKeyboardFocusEvent, System.Windows.UIElement.OnLostKeyboardFocus, true);
 
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Keyboard.PreviewKeyDownEvent, $asm.$.System.Windows.UIElement.f23, false);
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Keyboard.PreviewKeyUpEvent, $asm.$.System.Windows.UIElement.f24, false);
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Keyboard.KeyDownEvent, $asm.$.System.Windows.UIElement.f25, false);
-                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Keyboard.KeyUpEvent, $asm.$.System.Windows.UIElement.f26, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Keyboard.PreviewKeyDownEvent, $asm.$.System.Windows.UIElement.f24, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Keyboard.PreviewKeyUpEvent, $asm.$.System.Windows.UIElement.f25, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Keyboard.KeyDownEvent, $asm.$.System.Windows.UIElement.f26, false);
+                    System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.Keyboard.KeyUpEvent, $asm.$.System.Windows.UIElement.f27, false);
 
                     System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.FocusManager.GotFocusEvent, System.Windows.UIElement.OnGotFocus, false);
                     System.Windows.EventManager.RegisterClassHandler(System.Windows.UIElement, System.Windows.Input.FocusManager.LostFocusEvent, System.Windows.UIElement.OnLostFocus, false);
@@ -17506,7 +17641,15 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
             },
             PreviousAvailableSize: null,
-            PreviousFinalRect: null
+            PreviousFinalRect: null,
+            CommandBindings: {
+                get: function () {
+                    return Bridge.cast(this.GetValue(System.Windows.UIElement.CommandBindingsProperty), System.Windows.Input.CommandBindingCollection);
+                },
+                set: function (value) {
+                    this.SetValue(System.Windows.UIElement.CommandBindingsProperty, value);
+                }
+            }
         },
         alias: [
             "RaiseEvent", "System$Windows$IInputElement$RaiseEvent",
@@ -17521,7 +17664,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.logicalChildren = new (System.Collections.Generic.List$1(System.Object)).ctor();
                 this.LogicalChildren = new (System.Collections.ObjectModel.ReadOnlyCollection$1(System.Object))(this.logicalChildren);
                 this.routedEventHandlers = new (Granular.Collections.ListDictionary$2(System.Windows.RoutedEvent,System.Windows.RoutedEventHandlerItem))();
-                this.routedEventHandlersCache = Granular.Collections.CacheDictionary$2(System.Windows.RoutedEvent,System.Collections.Generic.IEnumerable$1(System.Windows.RoutedEventHandlerItem)).CreateUsingStringKeys(Bridge.fn.cacheBind(this, this.ResolveRoutedEventHandlers), $asm.$.System.Windows.UIElement.f27);
+                this.routedEventHandlersCache = Granular.Collections.CacheDictionary$2(System.Windows.RoutedEvent,System.Collections.Generic.IEnumerable$1(System.Windows.RoutedEventHandlerItem)).CreateUsingStringKeys(Bridge.fn.cacheBind(this, this.ResolveRoutedEventHandlers), $asm.$.System.Windows.UIElement.f28);
                 this.DesiredSize = System.Windows.Size.Zero;
                 this.PreviousFinalRect = System.Windows.Rect.Empty;
                 this.PreviousAvailableSize = System.Windows.Size.Infinity;
@@ -17532,7 +17675,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.VisualIsVisible = this.IsVisible;
                 this.VisualOpacity = this.Opacity;
 
-                this.disableMeasureInvalidationToken = new Granular.Disposable(Bridge.fn.bind(this, $asm.$.System.Windows.UIElement.f28));
+                this.disableMeasureInvalidationToken = new Granular.Disposable(Bridge.fn.bind(this, $asm.$.System.Windows.UIElement.f29));
             }
         },
         methods: {
@@ -17661,6 +17804,12 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             removeLostFocus: function (value) {
                 this.RemoveHandler(System.Windows.UIElement.LostFocusEvent, value);
+            },
+            addExecuteCommand: function (value) {
+                this.AddHandler(System.Windows.UIElement.ExecutedEvent, value);
+            },
+            removeExecuteCommand: function (value) {
+                this.RemoveHandler(System.Windows.UIElement.ExecutedEvent, value);
             },
             AddLogicalChild: function (child) {
                 var childElement = Bridge.as(child, System.Windows.UIElement);
@@ -18155,6 +18304,24 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             OnLostFocus: function (e) {
                 //
+            },
+            OnExecuteCommand: function (e) {
+                var $t;
+                var commandBindings = this.CommandBindings;
+                if (commandBindings != null) {
+                    $t = Bridge.getEnumerator(commandBindings);
+                    try {
+                        while ($t.moveNext()) {
+                            var commandBinding = { v : $t.Current };
+                            if (Bridge.referenceEquals(commandBinding.v.Command, e.Command)) {
+                                commandBinding.v != null ? commandBinding.v.OnExecuted(e.Source, e) : null;
+                            }
+                        }
+                    } finally {
+                        if (Bridge.is($t, System.IDisposable)) {
+                            $t.System$IDisposable$dispose();
+                        }
+                    }}
             }
         }
     });
@@ -18202,48 +18369,51 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             Bridge.cast(sender, System.Windows.UIElement).OnClipChanged(e);
         },
         f14: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnQueryCursor(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnExecuteCommand(e);
         },
         f15: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnPreviewMouseMove(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnQueryCursor(e);
         },
         f16: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnPreviewMouseDown(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnPreviewMouseMove(e);
         },
         f17: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnPreviewMouseUp(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnPreviewMouseDown(e);
         },
         f18: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnPreviewMouseWheel(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnPreviewMouseUp(e);
         },
         f19: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnMouseMove(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnPreviewMouseWheel(e);
         },
         f20: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnMouseDown(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnMouseMove(e);
         },
         f21: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnMouseUp(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnMouseDown(e);
         },
         f22: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnMouseWheel(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnMouseUp(e);
         },
         f23: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnPreviewKeyDown(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnMouseWheel(e);
         },
         f24: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnPreviewKeyUp(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnPreviewKeyDown(e);
         },
         f25: function (sender, e) {
-            Bridge.cast(sender, System.Windows.UIElement).OnKeyDown(e);
+            Bridge.cast(sender, System.Windows.UIElement).OnPreviewKeyUp(e);
         },
         f26: function (sender, e) {
+            Bridge.cast(sender, System.Windows.UIElement).OnKeyDown(e);
+        },
+        f27: function (sender, e) {
             Bridge.cast(sender, System.Windows.UIElement).OnKeyUp(e);
         },
-        f27: function (routedEvent) {
+        f28: function (routedEvent) {
             return routedEvent.StringKey;
         },
-        f28: function () {
+        f29: function () {
             Bridge.identity(this.disableMeasureInvalidationRequests, (this.disableMeasureInvalidationRequests = (this.disableMeasureInvalidationRequests - 1) | 0));
         }
     });
@@ -30475,7 +30645,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             OnClick: function (e) {
                 var command = this.Command;
                 if (command != null) {
-                    command.System$Windows$Input$ICommand$Execute(this.CommandParameter);
+                    this.RaiseEvent(new System.Windows.Input.ExecutedRoutedEventArgs(command, this.CommandParameter, this));
                 }
             },
             OnIsPressedChanged: function (e) {

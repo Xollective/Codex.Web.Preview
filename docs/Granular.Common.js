@@ -1989,6 +1989,12 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
                 GetInstanceProperty: function (type, propertyName) {
                     return Bridge.Reflection.getMembers(type, 16, 84 | 256, propertyName);
                 },
+                GetStaticProperty: function (type, propertyName) {
+                    return Bridge.Reflection.getMembers(type, 16, 88 | 256, propertyName);
+                },
+                GetStaticField: function (type, propertyName) {
+                    return Bridge.Reflection.getMembers(type, 4, 88 | 256, propertyName);
+                },
                 GetDefaultIndexProperty: function (type) {
                     return System.Linq.Enumerable.from(Bridge.Reflection.getMembers(type, 16, 28)).firstOrDefault($asm.$.Granular.Extensions.TypeExtensions.f1, null);
                 },
