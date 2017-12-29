@@ -3064,7 +3064,7 @@ Bridge.assembly("Codex.View.Web", function ($asm, globals) {
                 var url = (this.baseUrl || "") + (System.Enum.toString(Codex.Sdk.Search.CodexServiceMethod, searchMethod) || "");
                 System.Console.WriteLine(url);
 
-                var config = { url: "testsearchdata.json", type: "GET", contentType: "application/json; charset=utf-8", success: function (data, textStatus, successRequest) {
+                var config = { url: "testsearchdata.json", type: "GET", dataType: "json", contentType: "application/json; charset=utf-8", success: function (data, textStatus, successRequest) {
                     tcs.setResult(Newtonsoft.Json.JsonConvert.DeserializeObject(successRequest.responseText, TSerializedResult));
                     return null;
                 }, error: function (errorRequest, textStatus, errorThrown) {
