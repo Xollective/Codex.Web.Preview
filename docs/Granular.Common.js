@@ -142,6 +142,11 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
         }
     });
 
+    Bridge.definei("Granular.Collections.IProducerCollection$1", function (T) { return {
+        inherits: [System.Collections.Generic.IEnumerable$1(T),System.Collections.ICollection],
+        $kind: "interface"
+    }; });
+
     Bridge.define("Granular.Collections.ListSortDirection", {
         $kind: "enum",
         statics: {
@@ -3868,6 +3873,38 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
             },
             Granular$Collections$IMinimalSet$GetValues: function () {
                 return this.set;
+            }
+        }
+    }; });
+
+    Bridge.define("Granular.Collections.QueueCollection$1", function (T) { return {
+        inherits: [System.Collections.Generic.Queue$1(T),Granular.Collections.IProducerCollection$1(T)],
+        alias: [
+            "Granular$Collections$IProducerCollection$1$add", "Granular$Collections$IProducerCollection$1$" + Bridge.getTypeAlias(T) + "$add",
+            "getEnumerator", "System$Collections$IEnumerable$getEnumerator",
+            "getEnumerator", ["System$Collections$Generic$IEnumerable$1$" + Bridge.getTypeAlias(T) + "$getEnumerator", "System$Collections$Generic$IEnumerable$1$getEnumerator"],
+            "copyTo", "System$Collections$ICollection$copyTo",
+            "Count", "System$Collections$ICollection$Count"
+        ],
+        methods: {
+            Granular$Collections$IProducerCollection$1$add: function (item) {
+                this.enqueue(item);
+            }
+        }
+    }; });
+
+    Bridge.define("Granular.Collections.StackCollection$1", function (T) { return {
+        inherits: [System.Collections.Generic.Stack$1(T),Granular.Collections.IProducerCollection$1(T)],
+        alias: [
+            "Granular$Collections$IProducerCollection$1$add", "Granular$Collections$IProducerCollection$1$" + Bridge.getTypeAlias(T) + "$add",
+            "getEnumerator", "System$Collections$IEnumerable$getEnumerator",
+            "getEnumerator", ["System$Collections$Generic$IEnumerable$1$" + Bridge.getTypeAlias(T) + "$getEnumerator", "System$Collections$Generic$IEnumerable$1$getEnumerator"],
+            "copyTo", "System$Collections$ICollection$copyTo",
+            "Count", "System$Collections$ICollection$Count"
+        ],
+        methods: {
+            Granular$Collections$IProducerCollection$1$add: function (item) {
+                this.push(item);
             }
         }
     }; });

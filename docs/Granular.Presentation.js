@@ -6,25 +6,6 @@
 Bridge.assembly("Granular.Presentation", function ($asm, globals) {
     "use strict";
 
-    Bridge.define("Granular.Presentation.Web.HtmlInputElementExtensions", {
-        statics: {
-            methods: {
-                DispatchEvent: function (inputElement, e, eventType) {
-                    var $t;
-                    ($t = (Bridge.as(inputElement, Granular.Presentation.Web.IHtmlInputElement))) != null ? $t.Granular$Presentation$Web$IHtmlInputElement$DispatchEvent(e, eventType) : null;
-                }
-            }
-        }
-    });
-
-    Bridge.define("Granular.Presentation.Web.IHtmlElementHost", {
-        $kind: "interface"
-    });
-
-    Bridge.define("Granular.Presentation.Web.IHtmlInputElement", {
-        $kind: "interface"
-    });
-
     Bridge.define("MS.Internal.KnownBoxes.BooleanBoxes", {
         statics: {
             fields: {
@@ -2036,7 +2017,9 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         statics: {
             methods: {
                 Raise: function (handler, sender, oldValue, newValue) {
-                    !Bridge.staticEquals(handler, null) ? handler(sender, oldValue, newValue) : null;
+                    if (!Bridge.staticEquals(handler, null)) {
+                        handler(sender, oldValue, newValue);
+                    }
                 }
             }
         }
@@ -10404,17 +10387,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             GetRenderElement: function (factory) {
                 var $t;
                 if (this.visualRenderElement == null) {
-                    this.renderElementFactory = factory;
-                    this.visualRenderElement = factory.System$Windows$Media$IRenderElementFactory$CreateVisualRenderElement(this);
-
-                    this.visualRenderElement.System$Windows$Media$IVisualRenderElement$Background = this.VisualBackground;
-                    this.visualRenderElement.System$Windows$Media$IVisualRenderElement$Bounds = this.VisualBounds;
-                    this.visualRenderElement.System$Windows$Media$IVisualRenderElement$Clip = this.VisualClip;
-                    this.visualRenderElement.System$Windows$Media$IVisualRenderElement$ClipToBounds = this.VisualClipToBounds;
-                    this.visualRenderElement.System$Windows$Media$IVisualRenderElement$IsHitTestVisible = this.VisualIsHitTestVisible;
-                    this.visualRenderElement.System$Windows$Media$IVisualRenderElement$IsVisible = this.VisualIsVisible;
-                    this.visualRenderElement.System$Windows$Media$IVisualRenderElement$Opacity = this.VisualOpacity;
-                    this.visualRenderElement.System$Windows$Media$IVisualRenderElement$Transform = this.VisualTransform;
+                    this.visualRenderElement = this.CreateRenderElement(factory);
 
                     var content = this.CreateRenderElementContentOverride(factory);
 
@@ -10439,6 +10412,21 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     }}
 
                 return this.visualRenderElement;
+            },
+            CreateRenderElement: function (factory) {
+                this.renderElementFactory = factory;
+                var visualRenderElement = factory.System$Windows$Media$IRenderElementFactory$CreateVisualRenderElement(this);
+
+                visualRenderElement.System$Windows$Media$IVisualRenderElement$Background = this.VisualBackground;
+                visualRenderElement.System$Windows$Media$IVisualRenderElement$Bounds = this.VisualBounds;
+                visualRenderElement.System$Windows$Media$IVisualRenderElement$Clip = this.VisualClip;
+                visualRenderElement.System$Windows$Media$IVisualRenderElement$ClipToBounds = this.VisualClipToBounds;
+                visualRenderElement.System$Windows$Media$IVisualRenderElement$IsHitTestVisible = this.VisualIsHitTestVisible;
+                visualRenderElement.System$Windows$Media$IVisualRenderElement$IsVisible = this.VisualIsVisible;
+                visualRenderElement.System$Windows$Media$IVisualRenderElement$Opacity = this.VisualOpacity;
+                visualRenderElement.System$Windows$Media$IVisualRenderElement$Transform = this.VisualTransform;
+
+                return visualRenderElement;
             },
             CreateRenderElementContentOverride: function (factory) {
                 return null;
@@ -17423,6 +17411,11 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
             },
             methods: {
+                GetElementEventRouteItems: function (originalSource, logicalSource, currentElement, currentHandlers) {
+                    return System.Linq.Enumerable.from(currentHandlers).select(function (handler) {
+                            return new System.Windows.EventRouteItem(handler, originalSource, logicalSource, currentElement);
+                        });
+                },
                 AddHandler: function (element, routedEvent, handler, handledEventsToo) {
                     if (handledEventsToo === void 0) { handledEventsToo = false; }
                     if (Bridge.is(element, System.Windows.UIElement)) {
@@ -17664,7 +17657,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.logicalChildren = new (System.Collections.Generic.List$1(System.Object)).ctor();
                 this.LogicalChildren = new (System.Collections.ObjectModel.ReadOnlyCollection$1(System.Object))(this.logicalChildren);
                 this.routedEventHandlers = new (Granular.Collections.ListDictionary$2(System.Windows.RoutedEvent,System.Windows.RoutedEventHandlerItem))();
-                this.routedEventHandlersCache = Granular.Collections.CacheDictionary$2(System.Windows.RoutedEvent,System.Collections.Generic.IEnumerable$1(System.Windows.RoutedEventHandlerItem)).CreateUsingStringKeys(Bridge.fn.cacheBind(this, this.ResolveRoutedEventHandlers), $asm.$.System.Windows.UIElement.f28);
+                this.routedEventHandlersCache = Granular.Collections.CacheDictionary$2(System.Windows.RoutedEvent,System.Collections.Generic.IReadOnlyCollection$1(System.Windows.RoutedEventHandlerItem)).CreateUsingStringKeys(Bridge.fn.cacheBind(this, this.ResolveRoutedEventHandlers), $asm.$.System.Windows.UIElement.f28);
                 this.DesiredSize = System.Windows.Size.Zero;
                 this.PreviousFinalRect = System.Windows.Rect.Empty;
                 this.PreviousAvailableSize = System.Windows.Size.Infinity;
@@ -17853,9 +17846,48 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.routedEventHandlersCache.Remove(routedEvent);
             },
             RaiseEvent: function (e) {
-                var eventRoute = new System.Windows.EventRoute(e.RoutedEvent, this.GetEventRouteItems(e.RoutedEvent, this, this));
+                var eventRoute = new System.Windows.EventRoute(e.RoutedEvent, this.GetEventRouteItemsIterative(e.RoutedEvent, this, this));
                 e.Source = this;
                 eventRoute.InvokeHandlers(e);
+            },
+            GetEventRouteItemsIterative: function (routedEvent, originalSource, logicalSource) {
+                if (routedEvent.RoutingStrategy === System.Windows.RoutingStrategy.Direct) {
+                    var elementItems = this.GetRoutedEventHandlers(routedEvent);
+                    if (System.Array.getCount(elementItems, System.Windows.RoutedEventHandlerItem) === 0) {
+                        return System.Linq.Enumerable.empty();
+                    }
+
+                    return System.Linq.Enumerable.from(elementItems).select(Bridge.fn.bind(this, function (handler) {
+                            return new System.Windows.EventRouteItem(handler, originalSource, logicalSource, this);
+                        }));
+                } else {
+                    var items = null;
+                    var bubble = routedEvent.RoutingStrategy === System.Windows.RoutingStrategy.Bubble;
+
+                    var currentElement = this;
+                    while (currentElement != null) {
+                        var currentHandlers = currentElement.GetRoutedEventHandlers(routedEvent);
+                        if (System.Array.getCount(currentHandlers, System.Windows.RoutedEventHandlerItem) !== 0) {
+                            var currentItems = System.Windows.UIElement.GetElementEventRouteItems(originalSource, logicalSource, currentElement, currentHandlers);
+                            if (items == null) {
+                                items = currentItems;
+                            } else if (bubble) {
+                                items = System.Linq.Enumerable.from(items).concat(currentItems);
+                            } else {
+                                items = System.Linq.Enumerable.from(currentItems).concat(items);
+                            }
+                        }
+
+                        var visualParent = Bridge.as(currentElement.VisualParent, System.Windows.UIElement);
+                        if (visualParent != null) {
+                            logicalSource = !Bridge.referenceEquals(currentElement.LogicalParent, visualParent) ? visualParent : logicalSource;
+                        }
+
+                        currentElement = visualParent;
+                    }
+
+                    return items || System.Linq.Enumerable.empty();
+                }
             },
             GetEventRouteItems: function (routedEvent, originalSource, logicalSource) {
                 var items = System.Linq.Enumerable.from(this.GetRoutedEventHandlers(routedEvent)).select(Bridge.fn.bind(this, function (handler) {
@@ -21342,7 +21374,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 System.Windows.UIElement.prototype.OnVisualBoundsChanged.call(this);
             },
             toString: function () {
-                return Granular.Extensions.StringExtensions.IsNullOrEmpty(this.Name) ? System.String.format("{0}", Bridge.Reflection.getTypeName(Bridge.getType(this))) : System.String.format("{0} ({1})", Bridge.Reflection.getTypeName(Bridge.getType(this)), this.Name);
+                return Granular.Extensions.StringExtensions.IsNullOrEmpty(this.Name) ? System.String.format("{0} [{1}]", Bridge.Reflection.getTypeName(Bridge.getType(this)), Bridge.box(this.ElementId, System.Int32)) : System.String.format("{0} ({1}) [{2}]", Bridge.Reflection.getTypeName(Bridge.getType(this)), this.Name, Bridge.box(this.ElementId, System.Int32));
             },
             OnPropertyChanged: function (e) {
                 System.Windows.UIElement.prototype.OnPropertyChanged.call(this, e);
@@ -31138,9 +31170,6 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             }
         },
         methods: {
-            OnResourcesChanged: function (e) {
-                System.Windows.Controls.Primitives.Thumb.prototype.OnResourcesChanged.call(this, e);
-            },
             CreateRenderElementContentOverride: function (factory) {
                 return System.Windows.Controls.Primitives.Thumb.prototype.CreateRenderElementContentOverride.call(this, factory);
             },

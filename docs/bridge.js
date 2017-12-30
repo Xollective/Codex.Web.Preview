@@ -3505,27 +3505,6 @@
                 return true;
             }
 
-            var isAssignableFromCache = type.$$isAssignableFromCache;
-            var baseTypeFullName = baseType.$$fullname;
-
-            if (isAssignableFromCache !== undefined) {
-                
-                var result = isAssignableFromCache[baseTypeFullName];
-                if (result !== undefined) {
-                    return result;
-                }
-            }
-            else {
-                isAssignableFromCache = { };
-                type.$$isAssignableFromCache = isAssignableFromCache;
-            }
-
-            var result = Bridge.Reflection._isAssignableFromHelper(baseType, type);
-            isAssignableFromCache[baseTypeFullName] = result;
-            return result;
-        },
-
-        _isAssignableFromHelper: function (baseType, type) {
             if (Bridge.isFunction(baseType.isAssignableFrom)) {
                 return baseType.isAssignableFrom(type);
             }

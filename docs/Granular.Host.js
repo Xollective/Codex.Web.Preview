@@ -1370,6 +1370,10 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
         }
     });
 
+    Bridge.define("Granular.Host.Render.IHtmlRenderPropertyModifier", {
+        $kind: "interface"
+    });
+
     Bridge.define("Granular.Host.Render.HtmlTransformRenderResource", {
         inherits: [System.Windows.Media.ITransformRenderResource],
         fields: {
@@ -1394,6 +1398,10 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
             }
         },
         alias: ["Matrix", "System$Windows$Media$ITransformRenderResource$Matrix"]
+    });
+
+    Bridge.define("Granular.Host.Render.IHtmlRenderElementHost", {
+        $kind: "interface"
     });
 
     Bridge.define("Granular.Host.RenderQueue", {
@@ -2086,6 +2094,26 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
         },
         f2: function () {
             Granular.Host.SvgElementExtensions.SetSvgTransform(this.HtmlElement, this.transformRenderResource.Matrix, this.converter);
+        }
+    });
+
+    Bridge.define("Granular.Host.Render.HtmlRenderPropertyModifier", {
+        inherits: [Granular.Host.Render.IHtmlRenderPropertyModifier],
+        statics: {
+            fields: {
+                Default: null
+            },
+            ctors: {
+                init: function () {
+                    this.Default = new Granular.Host.Render.HtmlRenderPropertyModifier();
+                }
+            }
+        },
+        alias: ["ModifyBounds", "Granular$Host$Render$IHtmlRenderPropertyModifier$ModifyBounds"],
+        methods: {
+            ModifyBounds: function (bounds) {
+                return bounds;
+            }
         }
     });
 
@@ -4384,6 +4412,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                     }
 
                     this.bounds = value;
+
                     this.renderQueue$1.InvokeAsync(Bridge.fn.bind(this, $asm.$.Granular.Host.Render.HtmlVisualRenderElement.f3));
                 }
             },
@@ -4488,18 +4517,16 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
         ],
         ctors: {
             ctor: function (owner, factory, renderQueue, converter) {
-                var $t;
                 this.$initialize();
                 Granular.Host.Render.HtmlContainerRenderElement.ctor.call(this, Granular.Host.Render.HtmlVisualRenderElement.CreateHtmlElement(owner), renderQueue);
                 this.factory = factory;
                 this.renderQueue$1 = renderQueue;
                 this.converter = converter;
-                ($t = (Bridge.as(owner, Granular.Presentation.Web.IHtmlElementHost))) != null ? $t.Granular$Presentation$Web$IHtmlElementHost$SetRenderElement(this.HtmlElement) : null;
 
-                this.bounds = System.Windows.Rect.Zero;
                 this.isVisible = true;
                 this.opacity = 1;
                 this.transform = System.Windows.Media.Matrix.Identity;
+                this.bounds = System.Windows.Rect.Zero;
 
                 Granular.Host.HtmlElementExtensions.SetHtmlBounds(this.HtmlElement, this.Bounds, converter);
                 Granular.Host.HtmlElementExtensions.SetHtmlClipToBounds(this.HtmlElement, this.ClipToBounds);
@@ -4507,6 +4534,11 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                 Granular.Host.HtmlElementExtensions.SetHtmlIsVisible(this.HtmlElement, this.IsVisible);
                 Granular.Host.HtmlElementExtensions.SetHtmlOpacity(this.HtmlElement, this.Opacity, converter);
                 Granular.Host.HtmlElementExtensions.SetHtmlTransform(this.HtmlElement, this.Transform, converter);
+
+                var host = Bridge.as(owner, Granular.Host.Render.IHtmlRenderElementHost);
+                if (host != null) {
+                    host.Granular$Host$Render$IHtmlRenderElementHost$SetRenderElement(this.HtmlElement);
+                }
             }
         },
         methods: {
