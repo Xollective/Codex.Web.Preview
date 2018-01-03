@@ -212,10 +212,10 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                     }
                 },
                 SetHtmlFontFamily: function (element, fontFamily, converter) {
-                    if (!System.Linq.Enumerable.from(fontFamily.FamilyNames).any()) {
+                    if (fontFamily.IsEmpty) {
                         Granular.Host.HtmlElementExtensions.ClearHtmlStyleProperty(element, "font-family");
                     } else {
-                        Granular.Host.HtmlElementExtensions.SetHtmlStyleProperty(element, "font-family", converter.ToFontFamilyNamesString(fontFamily));
+                        Granular.Host.HtmlElementExtensions.SetHtmlStyleProperty(element, "font-family", Granular.Host.HtmlValueConverter.ToFontFamilyNamesString(fontFamily));
                     }
                 },
                 SetHtmlFontSize: function (element, fontSize, converter) {
@@ -313,6 +313,16 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                 },
                 GetReflectedGradientStops: function (gradientStops) {
                     return System.Linq.Enumerable.from(gradientStops).select($asm.$.Granular.Host.HtmlValueConverter.f1).concat(System.Linq.Enumerable.from(gradientStops).select($asm.$.Granular.Host.HtmlValueConverter.f2).reverse()).toArray(System.Windows.Media.GradientStop);
+                },
+                ToFontFamilyNamesString: function (fontFamily) {
+                    var styleStringPropertyName = "$styleString";
+                    var styleString = fontFamily[styleStringPropertyName];
+                    if ((styleString === undefined)) {
+                        styleString = System.Linq.Enumerable.from(fontFamily.FamilyNames).select($asm.$.Granular.Host.HtmlValueConverter.f3).aggregate($asm.$.Granular.Host.HtmlValueConverter.f4);
+                        fontFamily[styleStringPropertyName] = styleString;
+                    }
+
+                    return styleString;
                 }
             }
         },
@@ -403,7 +413,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                 return System.String.format("{0}(ellipse {1} {2} at {3}, {4})", gradientType, this.ToPercentString(brush.RadiusX), this.ToPercentString(brush.RadiusY), this.ToPercentString$1(brush.GradientOrigin), this.ToColorStopsString(gradientStops));
             },
             ToColorStopsString: function (gradientStops) {
-                return System.Linq.Enumerable.from(gradientStops).select(Bridge.fn.bind(this, $asm.$.Granular.Host.HtmlValueConverter.f3)).defaultIfEmpty("").aggregate($asm.$.Granular.Host.HtmlValueConverter.f4);
+                return System.Linq.Enumerable.from(gradientStops).select(Bridge.fn.bind(this, $asm.$.Granular.Host.HtmlValueConverter.f5)).defaultIfEmpty("").aggregate($asm.$.Granular.Host.HtmlValueConverter.f4);
             },
             ToImageString$1: function (brush, targetRect) {
                 return this.ToLinearGradientString(brush, targetRect);
@@ -533,9 +543,6 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                 }
 
                 throw new Granular.Exception("Unexpected TextWrapping \"{0}\"", [Bridge.box(textWrapping, System.Windows.TextWrapping, System.Enum.toStringFn(System.Windows.TextWrapping))]);
-            },
-            ToFontFamilyNamesString: function (fontFamily) {
-                return System.Linq.Enumerable.from(fontFamily.FamilyNames).select($asm.$.Granular.Host.HtmlValueConverter.f5).aggregate($asm.$.Granular.Host.HtmlValueConverter.f4);
             },
             ToBooleanString: function (value) {
                 return value ? "true" : "false";
@@ -840,14 +847,14 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
         f2: function (gradientStop) {
             return new System.Windows.Media.GradientStop.$ctor1(gradientStop.Color, 1.0 - gradientStop.Offset / 2);
         },
-        f3: function (gradientStop) {
-            return System.String.format("{0} {1}", this.ToColorString(gradientStop.Color), this.ToPercentString(gradientStop.Offset));
+        f3: function (familyName) {
+            return System.String.format("\"{0}\"", [familyName]);
         },
         f4: function (s1, s2) {
             return System.String.format("{0}, {1}", s1, s2);
         },
-        f5: function (familyName) {
-            return System.String.format("\"{0}\"", [familyName]);
+        f5: function (gradientStop) {
+            return System.String.format("{0} {1}", this.ToColorString(gradientStop.Color), this.ToPercentString(gradientStop.Offset));
         }
     });
 

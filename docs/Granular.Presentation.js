@@ -6,6 +6,42 @@
 Bridge.assembly("Granular.Presentation", function ($asm, globals) {
     "use strict";
 
+    Bridge.define("Granular.Collections.DependencyPropertyEntryMap", {
+        fields: {
+            entries: null,
+            inheritEntries: null
+        },
+        ctors: {
+            init: function () {
+                this.entries = new (Granular.Compatibility.StringDictionary$1(System.Windows.IDependencyPropertyValueEntry))();
+            }
+        },
+        methods: {
+            Add: function (entry) {
+                var property = entry.System$Windows$IDependencyPropertyValueEntry$Property;
+                if (property.Inherits) {
+                    if (this.inheritEntries == null) {
+                        this.inheritEntries = new (System.Collections.Generic.List$1(System.Windows.IDependencyPropertyValueEntry)).ctor();
+                    }
+
+                    this.inheritEntries.add(entry);
+                }
+
+                this.entries.Add(property.StringKey, entry);
+            },
+            GetInheritedPropertyEntries: function () {
+                if (this.inheritEntries == null) {
+                    return System.Linq.Enumerable.empty();
+                }
+
+                return this.inheritEntries;
+            },
+            TryGetValue: function (dependencyProperty, entry) {
+                return this.entries.TryGetValue(dependencyProperty.StringKey, entry);
+            }
+        }
+    });
+
     Bridge.define("MS.Internal.KnownBoxes.BooleanBoxes", {
         statics: {
             fields: {
@@ -227,8 +263,8 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         ctors: {
             ctor: function () {
                 this.$initialize();
-                this.entries = new (Granular.Collections.ConvertedStringDictionary$2(System.Windows.DependencyProperty,System.Windows.IDependencyPropertyValueEntry))($asm.$.System.Windows.DependencyObject.f1);
-                this.readOnlyEntries = new (Granular.Collections.ConvertedStringDictionary$2(System.Windows.DependencyProperty,System.Windows.IDependencyPropertyValueEntry))($asm.$.System.Windows.DependencyObject.f1);
+                this.entries = new Granular.Collections.DependencyPropertyEntryMap();
+                this.readOnlyEntries = new Granular.Collections.DependencyPropertyEntryMap();
 
                 this.entryValueChangedEventHandler = Bridge.fn.cacheBind(this, this.OnEntryValueChanged);
                 this.containedEntryValueChangedEventHandler = Bridge.fn.cacheBind(this, this.OnContainedEntryValueChanged);
@@ -258,7 +294,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     }
 
                     entry.v = this.CreateDependencyPropertyValueEntry(dependencyProperty, propertyMetadata);
-                    this.entries.Add(dependencyProperty, entry.v);
+                    this.entries.Add(entry.v);
                 }
 
                 return entry.v.System$Windows$IDependencyPropertyValueEntry$Value;
@@ -369,7 +405,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 var entry = { };
                 if (!this.entries.TryGetValue(dependencyProperty, entry)) {
                     entry.v = this.CreateDependencyPropertyValueEntry(dependencyProperty, dependencyProperty.GetMetadata(Bridge.getType(this)));
-                    this.entries.Add(dependencyProperty, entry.v);
+                    this.entries.Add(entry.v);
                 }
 
                 return entry.v;
@@ -382,7 +418,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
 
                 readOnlyEntry.v = new System.Windows.ReadOnlyDependencyPropertyValueEntry(this.GetInitializedValueEntry(dependencyProperty));
-                this.readOnlyEntries.Add(dependencyProperty, readOnlyEntry.v);
+                this.readOnlyEntries.Add(readOnlyEntry.v);
 
                 return readOnlyEntry.v;
             },
@@ -432,13 +468,11 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
 
                 if (this.inheritanceParent == null) {
                     // clear inherited values
-                    $t = Bridge.getEnumerator(this.entries.GetKeyValuePairs(), System.Collections.Generic.KeyValuePair$2(System.Windows.DependencyProperty,System.Windows.IDependencyPropertyValueEntry));
+                    $t = Bridge.getEnumerator(this.entries.GetInheritedPropertyEntries(), System.Windows.IDependencyPropertyValueEntry);
                     try {
                         while ($t.moveNext()) {
-                            var pair = $t.Current;
-                            if (pair.key.Inherits) {
-                                System.Windows.DependencyPropertyValueEntryExtensions.ClearBaseValue(pair.value, System.Windows.BaseValueSource.Inherited);
-                            }
+                            var entry = $t.Current;
+                            System.Windows.DependencyPropertyValueEntryExtensions.ClearBaseValue(entry, System.Windows.BaseValueSource.Inherited);
                         }
                     } finally {
                         if (Bridge.is($t, System.IDisposable)) {
@@ -446,13 +480,11 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                         }
                     }} else {
                     // update existing inherited values
-                    $t1 = Bridge.getEnumerator(this.entries.GetKeyValuePairs(), System.Collections.Generic.KeyValuePair$2(System.Windows.DependencyProperty,System.Windows.IDependencyPropertyValueEntry));
+                    $t1 = Bridge.getEnumerator(this.entries.GetInheritedPropertyEntries(), System.Windows.IDependencyPropertyValueEntry);
                     try {
                         while ($t1.moveNext()) {
-                            var pair1 = $t1.Current;
-                            if (pair1.key.Inherits) {
-                                System.Windows.DependencyPropertyValueEntryExtensions.SetBaseValue(pair1.value, System.Windows.BaseValueSource.Inherited, this.inheritanceParent.GetValue(pair1.key));
-                            }
+                            var entry1 = $t1.Current;
+                            System.Windows.DependencyPropertyValueEntryExtensions.SetBaseValue(entry1, System.Windows.BaseValueSource.Inherited, this.inheritanceParent.GetValue(entry1.System$Windows$IDependencyPropertyValueEntry$Property));
                         }
                     } finally {
                         if (Bridge.is($t1, System.IDisposable)) {
@@ -460,13 +492,11 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                         }
                     }
                     // add missing inherited values
-                    $t2 = Bridge.getEnumerator(this.inheritanceParent.entries.GetKeyValuePairs(), System.Collections.Generic.KeyValuePair$2(System.Windows.DependencyProperty,System.Windows.IDependencyPropertyValueEntry));
+                    $t2 = Bridge.getEnumerator(this.inheritanceParent.entries.GetInheritedPropertyEntries(), System.Windows.IDependencyPropertyValueEntry);
                     try {
                         while ($t2.moveNext()) {
-                            var pair2 = $t2.Current;
-                            if (pair2.key.Inherits) {
-                                System.Windows.DependencyPropertyValueEntryExtensions.SetBaseValue(this.GetInitializedValueEntry(pair2.key), System.Windows.BaseValueSource.Inherited, pair2.value.System$Windows$IDependencyPropertyValueEntry$Value);
-                            }
+                            var entry2 = $t2.Current;
+                            System.Windows.DependencyPropertyValueEntryExtensions.SetBaseValue(this.GetInitializedValueEntry(entry2.System$Windows$IDependencyPropertyValueEntry$Property), System.Windows.BaseValueSource.Inherited, entry2.System$Windows$IDependencyPropertyValueEntry$Value);
                         }
                     } finally {
                         if (Bridge.is($t2, System.IDisposable)) {
@@ -484,14 +514,6 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     System.Windows.DependencyPropertyValueEntryExtensions.SetBaseValue(this.GetInitializedValueEntry(e.Property), System.Windows.BaseValueSource.Inherited, e.NewValue);
                 }
             }
-        }
-    });
-
-    Bridge.ns("System.Windows.DependencyObject", $asm.$);
-
-    Bridge.apply($asm.$.System.Windows.DependencyObject, {
-        f1: function (dependencyProperty) {
-            return dependencyProperty.StringKey;
         }
     });
 
@@ -7825,31 +7847,43 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             ctors: {
                 init: function () {
-                    this.Default = new System.Windows.Media.FontFamily.$ctor1("");
+                    this.Default = new System.Windows.Media.FontFamily.ctor("");
                 }
             },
             methods: {
                 Parse: function (value) {
-                    return new System.Windows.Media.FontFamily.ctor(System.Linq.Enumerable.from(System.String.split(value, [44].map(function(i) {{ return String.fromCharCode(i); }}))).select($asm.$.System.Windows.Media.FontFamily.f1).toArray(System.String));
+                    return new System.Windows.Media.FontFamily.$ctor1(System.Linq.Enumerable.from(System.String.split(value, [44].map(function(i) {{ return String.fromCharCode(i); }}))).select($asm.$.System.Windows.Media.FontFamily.f1).toArray(System.String));
                 }
             }
         },
+        fields: {
+            familyNames: null
+        },
         props: {
-            FamilyName: {
+            IsEmpty: {
                 get: function () {
-                    return System.Linq.Enumerable.from(this.FamilyNames).firstOrDefault(null, null);
+                    return this.familyNames.length === 0;
                 }
             },
-            FamilyNames: null
+            FamilyName: {
+                get: function () {
+                    return this.familyNames.length === 0 ? null : this.familyNames[System.Array.index(0, this.familyNames)];
+                }
+            },
+            FamilyNames: {
+                get: function () {
+                    return this.familyNames;
+                }
+            }
         },
         ctors: {
-            $ctor1: function (familyName) {
+            ctor: function (familyName) {
                 this.$initialize();
-                this.FamilyNames = System.Array.init([familyName], System.String);
+                this.familyNames = System.Array.init([familyName], System.String);
             },
-            ctor: function (familyNames) {
+            $ctor1: function (familyNames) {
                 this.$initialize();
-                this.FamilyNames = familyNames;
+                this.familyNames = familyNames;
             }
         }
     });
@@ -8334,7 +8368,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 if (weight === void 0) { weight = 0; }
                 if (stretch === void 0) { stretch = 0; }
 
-                System.Windows.Media.Typeface.$ctor1.call(this, new System.Windows.Media.FontFamily.$ctor1(typefaceName), style, weight, stretch);
+                System.Windows.Media.Typeface.$ctor1.call(this, new System.Windows.Media.FontFamily.ctor(typefaceName), style, weight, stretch);
                 //
             },
             $ctor1: function (fontFamily, style, weight, stretch) {
@@ -12290,6 +12324,11 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
             },
             ValuePriority: 0,
+            Property: {
+                get: function () {
+                    return this.dependencyProperty;
+                }
+            },
             NotifyValueChangedEventHandler: {
                 get: function () {
                     if (Bridge.staticEquals(this.notifyValueChangedEventHandler, null)) {
@@ -12314,6 +12353,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             "removeValueChanged", "System$Windows$IDependencyPropertyValueEntry$removeValueChanged",
             "Value", "System$Windows$IDependencyPropertyValueEntry$Value",
             "ValuePriority", "System$Windows$IDependencyPropertyValueEntry$ValuePriority",
+            "Property", "System$Windows$IDependencyPropertyValueEntry$Property",
             "GetValue", "System$Windows$IDependencyPropertyValueEntry$GetValue",
             "SetValue", "System$Windows$IDependencyPropertyValueEntry$SetValue",
             "GetBaseValuePriority", "System$Windows$IDependencyPropertyValueEntry$GetBaseValuePriority",
@@ -16482,6 +16522,11 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 get: function () {
                     return this.source.System$Windows$IDependencyPropertyValueEntry$ValuePriority;
                 }
+            },
+            Property: {
+                get: function () {
+                    return this.source.System$Windows$IDependencyPropertyValueEntry$Property;
+                }
             }
         },
         alias: [
@@ -16489,6 +16534,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             "removeValueChanged", "System$Windows$IDependencyPropertyValueEntry$removeValueChanged",
             "Value", "System$Windows$IDependencyPropertyValueEntry$Value",
             "ValuePriority", "System$Windows$IDependencyPropertyValueEntry$ValuePriority",
+            "Property", "System$Windows$IDependencyPropertyValueEntry$Property",
             "GetValue", "System$Windows$IDependencyPropertyValueEntry$GetValue",
             "SetValue", "System$Windows$IDependencyPropertyValueEntry$SetValue",
             "GetBaseValuePriority", "System$Windows$IDependencyPropertyValueEntry$GetBaseValuePriority",

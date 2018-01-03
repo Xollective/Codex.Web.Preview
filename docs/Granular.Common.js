@@ -687,9 +687,7 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
                     return sourceArray[System.Array.index(index, sourceArray)];
                 },
                 Empty: function (TResult) {
-                    return System.Array.init(0, function (){
-                        return Bridge.getDefaultValue(TResult);
-                    }, TResult);
+                    return Granular.Compatibility.Linq.Enumerable.Singleton$1(TResult).EmptyArray;
                 },
                 Except: function (TSource, first, second) {
                     return System.Linq.Enumerable.from(first).except(second);
@@ -1010,6 +1008,21 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
             }
         }
     });
+
+    Bridge.define("Granular.Compatibility.Linq.Enumerable.Singleton$1", function (T) { return {
+        statics: {
+            fields: {
+                EmptyArray: null
+            },
+            ctors: {
+                init: function () {
+                    this.EmptyArray = System.Array.init(0, function (){
+                        return Bridge.getDefaultValue(T);
+                    }, T);
+                }
+            }
+        }
+    }; });
 
     Bridge.define("Granular.Compatibility.String", {
         statics: {
@@ -3909,8 +3922,8 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
         }
     }; });
 
-    Bridge.define("Granular.Compatibility.StringDictionary", {
-        inherits: [Granular.Collections.IMinimalDictionary$2(System.String,System.Object)],
+    Bridge.define("Granular.Compatibility.StringDictionary$1", function (TValue) { return {
+        inherits: [Granular.Collections.IMinimalDictionary$2(System.String,TValue)],
         statics: {
             ctors: {
                 ctor: function () {
@@ -3926,13 +3939,13 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
             dictionary: null
         },
         alias: [
-            "Add", "Granular$Collections$IMinimalDictionary$2$System$String$System$Object$Add",
-            "ContainsKey", "Granular$Collections$IMinimalDictionary$2$System$String$System$Object$ContainsKey",
-            "Remove", "Granular$Collections$IMinimalDictionary$2$System$String$System$Object$Remove",
-            "TryGetValue", "Granular$Collections$IMinimalDictionary$2$System$String$System$Object$TryGetValue",
-            "Clear", "Granular$Collections$IMinimalDictionary$2$System$String$System$Object$Clear",
-            "GetKeys", "Granular$Collections$IMinimalDictionary$2$System$String$System$Object$GetKeys",
-            "GetValues", "Granular$Collections$IMinimalDictionary$2$System$String$System$Object$GetValues"
+            "Add", "Granular$Collections$IMinimalDictionary$2$System$String$" + Bridge.getTypeAlias(TValue) + "$Add",
+            "ContainsKey", "Granular$Collections$IMinimalDictionary$2$System$String$" + Bridge.getTypeAlias(TValue) + "$ContainsKey",
+            "Remove", "Granular$Collections$IMinimalDictionary$2$System$String$" + Bridge.getTypeAlias(TValue) + "$Remove",
+            "TryGetValue", "Granular$Collections$IMinimalDictionary$2$System$String$" + Bridge.getTypeAlias(TValue) + "$TryGetValue",
+            "Clear", "Granular$Collections$IMinimalDictionary$2$System$String$" + Bridge.getTypeAlias(TValue) + "$Clear",
+            "GetKeys", "Granular$Collections$IMinimalDictionary$2$System$String$" + Bridge.getTypeAlias(TValue) + "$GetKeys",
+            "GetValues", "Granular$Collections$IMinimalDictionary$2$System$String$" + Bridge.getTypeAlias(TValue) + "$GetValues"
         ],
         ctors: {
             ctor: function () {
@@ -3963,7 +3976,7 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
                 value.v = this.dictionary[key];
 
                 if ((value.v === undefined)) {
-                    value.v = null;
+                    value.v = Bridge.getDefaultValue(TValue);
                     return false;
                 }
 
@@ -3979,7 +3992,7 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
                 return Object.values(this.dictionary);
             }
         }
-    });
+    }; });
 
     Bridge.define("System.Windows.Markup.RegexTokenDefinition", {
         inherits: [System.Windows.Markup.ITokenDefinition],
@@ -4272,6 +4285,10 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
             }
         }
     }; });
+
+    Bridge.define("Granular.Compatibility.StringDictionary", {
+        inherits: [Granular.Compatibility.StringDictionary$1(System.Object)]
+    });
 
     Bridge.define("System.Xml.Linq.XDocument", {
         inherits: [System.Xml.Linq.XContainer],
