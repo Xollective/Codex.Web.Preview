@@ -17,6 +17,23 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             }
         },
         methods: {
+            AddPropertyChanged: function (dependencyProperty, handler) {
+                var entry = { };
+                var key = dependencyProperty.StringKey;
+                if (!this.entries.TryGetValue(key, entry)) {
+                    // Create lightweight entry strictly for collecting property changed handlers
+                    entry.v = new Granular.Collections.DependencyPropertyEntryMap.DependencyPropertyEventEntry(dependencyProperty);
+                    this.entries.Add(key, entry.v);
+                }
+
+                entry.v.System$Windows$IDependencyPropertyEventEntry$addPropertyValueChanged(handler);
+            },
+            RemovedPropertyChanged: function (dependencyProperty, handler) {
+                var entry = { };
+                if (this.entries.TryGetValue(dependencyProperty.StringKey, entry)) {
+                    entry.v.System$Windows$IDependencyPropertyEventEntry$removePropertyValueChanged(handler);
+                }
+            },
             Add: function (entry) {
                 var property = entry.System$Windows$IDependencyPropertyValueEntry$Property;
                 if (property.Inherits) {
@@ -27,7 +44,17 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     this.inheritEntries.add(entry);
                 }
 
-                this.entries.Add(property.StringKey, entry);
+                var key = property.StringKey;
+                var currentEntry = { };
+                if (this.entries.TryGetValue(key, currentEntry)) {
+                    this.entries.Remove(key);
+
+                    // Replace the entry (i.e. transfer property changed handlers)
+                    // The current entry should be an event entry
+                    currentEntry.v.System$Windows$IDependencyPropertyValueEntry$Replace(entry);
+                }
+
+                this.entries.Add(key, entry);
             },
             GetInheritedPropertyEntries: function () {
                 if (this.inheritEntries == null) {
@@ -37,9 +64,18 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 return this.inheritEntries;
             },
             TryGetValue: function (dependencyProperty, entry) {
-                return this.entries.TryGetValue(dependencyProperty.StringKey, entry);
+                if (this.entries.TryGetValue(dependencyProperty.StringKey, entry) && entry.v.System$Windows$IDependencyPropertyValueEntry$Kind === System.Windows.EntryKind.Value) {
+                    return true;
+                }
+
+                entry.v = null;
+                return false;
             }
         }
+    });
+
+    Bridge.define("System.Windows.IDependencyPropertyEventEntry", {
+        $kind: "interface"
     });
 
     Bridge.define("MS.Internal.KnownBoxes.BooleanBoxes", {
@@ -272,6 +308,12 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             }
         },
         methods: {
+            AddPropertyChanged: function (dependencyProperty, handler) {
+                this.entries.AddPropertyChanged(dependencyProperty, handler);
+            },
+            RemovedPropertyChanged: function (dependencyProperty, handler) {
+                this.entries.RemovedPropertyChanged(dependencyProperty, handler);
+            },
             ContainsValue: function (dependencyProperty) {
                 var entry = { };
                 if (!this.entries.TryGetValue(dependencyProperty, entry)) {
@@ -2465,10 +2507,6 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         $kind: "interface"
     });
 
-    Bridge.define("System.Windows.IDependencyPropertyValueEntry", {
-        $kind: "interface"
-    });
-
     Bridge.define("System.Windows.DependencyPropertyValueEntryExtensions", {
         statics: {
             methods: {
@@ -2780,6 +2818,16 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             getHashCode2: function (obj) {
                 return Bridge.getHashCode(System.UriExtensions.GetAbsoluteUri(obj));
+            }
+        }
+    });
+
+    Bridge.define("System.Windows.EntryKind", {
+        $kind: "enum",
+        statics: {
+            fields: {
+                Event: 0,
+                Value: 1
             }
         }
     });
@@ -9934,6 +9982,11 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         }
     });
 
+    Bridge.define("System.Windows.IDependencyPropertyValueEntry", {
+        inherits: [System.Windows.IDependencyPropertyEventEntry],
+        $kind: "interface"
+    });
+
     Bridge.define("System.Windows.Application", {
         inherits: [System.Windows.IResourceContainer,System.Windows.Markup.IUriContext],
         statics: {
@@ -12267,247 +12320,6 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
 
                 return dependencyProperty;
-            }
-        }
-    });
-
-    Bridge.define("System.Windows.DependencyPropertyValueEntry", {
-        inherits: [System.Windows.IDependencyPropertyValueEntry],
-        statics: {
-            fields: {
-                BaseValuePriorities: 0,
-                ValuePriorities: 0,
-                BaseValueHighestPriority: 0,
-                CurrentValuePriority: 0,
-                AnimationValuePriority: 0
-            },
-            ctors: {
-                init: function () {
-                    this.BaseValuePriorities = 12;
-                    this.ValuePriorities = 14;
-                    this.BaseValueHighestPriority = 11;
-                    this.CurrentValuePriority = System.Windows.DependencyPropertyValueEntry.BaseValuePriorities;
-                    this.AnimationValuePriority = 13;
-                }
-            }
-        },
-        fields: {
-            valueChangedReentrancyLock: null,
-            value: null,
-            notifyValueChangedEventHandler: null,
-            indexedObservableValueChangedEventHandler: null,
-            observableValues: null,
-            values: null,
-            baseValuePriority: 0,
-            dependencyObject: null,
-            dependencyProperty: null,
-            coerceValueCallback: null
-        },
-        events: {
-            ValueChanged: null
-        },
-        props: {
-            Value: {
-                get: function () {
-                    return this.value;
-                },
-                set: function (value) {
-                    if (Bridge.is(this.value, System.Windows.INotifyChanged)) {
-                        Bridge.cast(this.value, System.Windows.INotifyChanged).System$Windows$INotifyChanged$removeChanged(this.NotifyValueChangedEventHandler);
-                    }
-
-                    this.value = value;
-
-                    if (Bridge.is(this.value, System.Windows.INotifyChanged)) {
-                        Bridge.cast(this.value, System.Windows.INotifyChanged).System$Windows$INotifyChanged$addChanged(this.NotifyValueChangedEventHandler);
-                    }
-                }
-            },
-            ValuePriority: 0,
-            Property: {
-                get: function () {
-                    return this.dependencyProperty;
-                }
-            },
-            NotifyValueChangedEventHandler: {
-                get: function () {
-                    if (Bridge.staticEquals(this.notifyValueChangedEventHandler, null)) {
-                        this.notifyValueChangedEventHandler = Bridge.fn.cacheBind(this, this.OnValueNotifyChanged);
-                    }
-
-                    return this.notifyValueChangedEventHandler;
-                }
-            },
-            IndexedObservableValueChangedEventHandler: {
-                get: function () {
-                    if (Bridge.staticEquals(this.indexedObservableValueChangedEventHandler, null)) {
-                        this.indexedObservableValueChangedEventHandler = Bridge.fn.cacheBind(this, this.OnIndexedObservableValueChanged);
-                    }
-
-                    return this.indexedObservableValueChangedEventHandler;
-                }
-            }
-        },
-        alias: [
-            "addValueChanged", "System$Windows$IDependencyPropertyValueEntry$addValueChanged",
-            "removeValueChanged", "System$Windows$IDependencyPropertyValueEntry$removeValueChanged",
-            "Value", "System$Windows$IDependencyPropertyValueEntry$Value",
-            "ValuePriority", "System$Windows$IDependencyPropertyValueEntry$ValuePriority",
-            "Property", "System$Windows$IDependencyPropertyValueEntry$Property",
-            "GetValue", "System$Windows$IDependencyPropertyValueEntry$GetValue",
-            "SetValue", "System$Windows$IDependencyPropertyValueEntry$SetValue",
-            "GetBaseValuePriority", "System$Windows$IDependencyPropertyValueEntry$GetBaseValuePriority",
-            "CoerceValue", "System$Windows$IDependencyPropertyValueEntry$CoerceValue"
-        ],
-        ctors: {
-            init: function () {
-                this.valueChangedReentrancyLock = new Granular.ReentrancyLock();
-            },
-            ctor: function (dependencyObject, dependencyProperty, coerceValueCallback) {
-                if (coerceValueCallback === void 0) { coerceValueCallback = null; }
-
-                this.$initialize();
-                this.dependencyObject = dependencyObject;
-                this.dependencyProperty = dependencyProperty;
-                this.coerceValueCallback = coerceValueCallback;
-
-                this.values = System.Array.init(14, null, System.Object);
-                for (var i = 0; i < this.values.length; i = (i + 1) | 0) {
-                    this.values[System.Array.index(i, this.values)] = System.Windows.Data.ObservableValue.UnsetValue;
-                }
-            }
-        },
-        methods: {
-            GetValue: function (priority, flattened) {
-                if (this.observableValues != null && this.observableValues[System.Array.index(priority, this.observableValues)] != null) {
-                    return flattened ? this.observableValues[System.Array.index(priority, this.observableValues)].Value : this.observableValues[System.Array.index(priority, this.observableValues)].BaseValue;
-                }
-
-                return this.values[System.Array.index(priority, this.values)];
-            },
-            SetValue: function (priority, value) {
-                if (this.observableValues != null && this.observableValues[System.Array.index(priority, this.observableValues)] != null) {
-                    this.observableValues[System.Array.index(priority, this.observableValues)].BaseValue = value;
-                    return;
-                }
-
-                var oldValue = this.values[System.Array.index(priority, this.values)];
-
-                if (Bridge.is(value, System.Windows.Data.IObservableValue)) {
-                    if (this.observableValues == null) {
-                        this.observableValues = System.Array.init(14, null, System.Windows.DependencyPropertyValueEntry.IndexedObservableValue);
-                    }
-
-                    var indexedObservableValue = new System.Windows.DependencyPropertyValueEntry.IndexedObservableValue(priority, oldValue);
-                    indexedObservableValue.addValueChanged(this.IndexedObservableValueChangedEventHandler);
-
-                    this.observableValues[System.Array.index(priority, this.observableValues)] = indexedObservableValue;
-                    this.values[System.Array.index(priority, this.values)] = System.Windows.Data.ObservableValue.UnsetValue;
-
-                    indexedObservableValue.BaseValue = value;
-                    return;
-                }
-
-                if (Granular.Compatibility.EqualityComparer.Default.equals2(oldValue, value)) {
-                    return;
-                }
-
-                this.values[System.Array.index(priority, this.values)] = value;
-
-                this.OnValueChanged(priority, value);
-            },
-            GetBaseValuePriority: function () {
-                if (this.baseValuePriority > System.Windows.DependencyPropertyValueEntry.BaseValueHighestPriority) {
-                    this.baseValuePriority = System.Windows.DependencyPropertyValueEntry.BaseValueHighestPriority;
-
-                    while (this.baseValuePriority > 0 && !this.IsValueValid(this.GetValue(this.baseValuePriority, true))) {
-                        this.baseValuePriority = (this.baseValuePriority - 1) | 0;
-                    }
-                }
-
-                return this.baseValuePriority;
-            },
-            CoerceValue: function () {
-                if (Bridge.staticEquals(this.coerceValueCallback, null)) {
-                    return;
-                }
-
-                var oldValue = this.Value;
-                var newValue = this.coerceValueCallback(this.dependencyObject, this.GetValue(this.ValuePriority, true));
-
-                if (Granular.Compatibility.EqualityComparer.Default.equals2(oldValue, newValue)) {
-                    return;
-                }
-
-                this.Value = newValue;
-                System.Windows.DependencyPropertyChangedEventHandlerExtensions.Raise(this.ValueChanged, this, new System.Windows.DependencyPropertyChangedEventArgs.$ctor1(this.dependencyProperty, oldValue, newValue));
-            },
-            OnIndexedObservableValueChanged: function (sender, oldValue, newValue) {
-                this.OnValueChanged(Bridge.cast(sender, System.Windows.DependencyPropertyValueEntry.IndexedObservableValue).Index, newValue);
-            },
-            OnValueChanged: function (newValuePriority, newValue) {
-                var $t;
-                if (!Granular.ReentrancyLock.op_Implicit(this.valueChangedReentrancyLock)) {
-                    $t = this.valueChangedReentrancyLock.Enter();
-                    try {
-                        this.OnValueChangedCore(newValuePriority, newValue);
-                    }
-                    finally {
-                        if (Bridge.hasValue($t)) {
-                            $t.System$IDisposable$dispose();
-                        }
-                    }
-                }
-            },
-            OnValueChangedCore: function (newValuePriority, newValue) {
-                if (this.ValuePriority > newValuePriority) {
-                    if (this.baseValuePriority <= newValuePriority && newValuePriority <= System.Windows.DependencyPropertyValueEntry.BaseValueHighestPriority) {
-                        this.baseValuePriority = 12; // invalidate baseValuePriority
-                    }
-
-                    return;
-                }
-
-                var oldValue = this.Value;
-                var isNewValueValid = this.IsValueValid(newValue);
-
-                if (this.ValuePriority === newValuePriority && isNewValueValid && Bridge.staticEquals(this.coerceValueCallback, null)) {
-                    this.Value = newValue;
-                    System.Windows.DependencyPropertyChangedEventHandlerExtensions.Raise(this.ValueChanged, this, new System.Windows.DependencyPropertyChangedEventArgs.$ctor1(this.dependencyProperty, oldValue, newValue)); // since this was already the value priority and there is no coercion, Value must have been changed here
-                    return;
-                }
-
-                if (this.ValuePriority < newValuePriority && !isNewValueValid) {
-                    return;
-                }
-
-                while (!isNewValueValid && newValuePriority > 0) {
-                    newValuePriority = (newValuePriority - 1) | 0;
-                    newValue = this.GetValue(newValuePriority, true);
-                    isNewValueValid = this.IsValueValid(newValue);
-                }
-
-                if (this.ValuePriority !== newValuePriority) {
-                    this.ValuePriority = newValuePriority;
-                    this.baseValuePriority = newValuePriority; // possible invalidation of baseValuePriority
-                }
-
-                if (!Bridge.staticEquals(this.coerceValueCallback, null)) {
-                    newValue = this.coerceValueCallback(this.dependencyObject, newValue);
-                }
-
-                if (Granular.Compatibility.EqualityComparer.Default.equals2(oldValue, newValue)) {
-                    return;
-                }
-
-                this.Value = newValue;
-                System.Windows.DependencyPropertyChangedEventHandlerExtensions.Raise(this.ValueChanged, this, new System.Windows.DependencyPropertyChangedEventArgs.$ctor1(this.dependencyProperty, oldValue, newValue));
-            },
-            OnValueNotifyChanged: function (sender, e) {
-                System.Windows.DependencyPropertyChangedEventHandlerExtensions.Raise(this.ValueChanged, this, new System.Windows.DependencyPropertyChangedEventArgs.ctor(this.dependencyProperty, this.Value));
-            },
-            IsValueValid: function (newValue) {
-                return !Bridge.referenceEquals(newValue, System.Windows.Data.ObservableValue.UnsetValue) && this.dependencyProperty.IsValidValue(newValue);
             }
         }
     });
@@ -16504,77 +16316,6 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         }
     });
 
-    Bridge.define("System.Windows.ReadOnlyDependencyPropertyValueEntry", {
-        inherits: [System.Windows.IDependencyPropertyValueEntry],
-        fields: {
-            source: null
-        },
-        events: {
-            ValueChanged: null
-        },
-        props: {
-            Value: {
-                get: function () {
-                    return this.source.System$Windows$IDependencyPropertyValueEntry$Value;
-                }
-            },
-            ValuePriority: {
-                get: function () {
-                    return this.source.System$Windows$IDependencyPropertyValueEntry$ValuePriority;
-                }
-            },
-            Property: {
-                get: function () {
-                    return this.source.System$Windows$IDependencyPropertyValueEntry$Property;
-                }
-            }
-        },
-        alias: [
-            "addValueChanged", "System$Windows$IDependencyPropertyValueEntry$addValueChanged",
-            "removeValueChanged", "System$Windows$IDependencyPropertyValueEntry$removeValueChanged",
-            "Value", "System$Windows$IDependencyPropertyValueEntry$Value",
-            "ValuePriority", "System$Windows$IDependencyPropertyValueEntry$ValuePriority",
-            "Property", "System$Windows$IDependencyPropertyValueEntry$Property",
-            "GetValue", "System$Windows$IDependencyPropertyValueEntry$GetValue",
-            "SetValue", "System$Windows$IDependencyPropertyValueEntry$SetValue",
-            "GetBaseValuePriority", "System$Windows$IDependencyPropertyValueEntry$GetBaseValuePriority",
-            "CoerceValue", "System$Windows$IDependencyPropertyValueEntry$CoerceValue"
-        ],
-        ctors: {
-            ctor: function (source) {
-                this.$initialize();
-                this.source = source;
-
-                source.System$Windows$IDependencyPropertyValueEntry$addValueChanged(Bridge.fn.bind(this, $asm.$.System.Windows.ReadOnlyDependencyPropertyValueEntry.f1));
-            }
-        },
-        methods: {
-            GetValue$1: function (flattened) {
-                return this.source.System$Windows$IDependencyPropertyValueEntry$GetValue(this.source.System$Windows$IDependencyPropertyValueEntry$ValuePriority, flattened);
-            },
-            GetValue: function (priority, flattened) {
-                return this.source.System$Windows$IDependencyPropertyValueEntry$GetValue(priority, flattened);
-            },
-            SetValue: function (priority, value) {
-                throw new Granular.Exception("Can't modify a readonly dependency property value");
-            },
-            GetBaseValuePriority: function () {
-                return this.source.System$Windows$IDependencyPropertyValueEntry$GetBaseValuePriority();
-            },
-            CoerceValue: function () {
-                this.source.System$Windows$IDependencyPropertyValueEntry$CoerceValue();
-            }
-        }
-    });
-
-    Bridge.ns("System.Windows.ReadOnlyDependencyPropertyValueEntry", $asm.$);
-
-    Bridge.apply($asm.$.System.Windows.ReadOnlyDependencyPropertyValueEntry, {
-        f1: function (sender, e) {
-            System.Windows.DependencyPropertyChangedEventHandlerExtensions.Raise(this.ValueChanged, this, e);
-        }
-    });
-
     Bridge.define("System.Windows.RectTypeConverter", {
         inherits: [System.Windows.Markup.ITypeConverter],
         alias: ["ConvertFrom", "System$Windows$Markup$ITypeConverter$ConvertFrom"],
@@ -17332,10 +17073,10 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             Register: function () {
                 this.IsMatched = Granular.Compatibility.EqualityComparer.Default.equals2(this.element.GetValue(this.property), this.value);
 
-                this.element.addPropertyChanged(Bridge.fn.cacheBind(this, this.OnPropertyChanged));
+                this.element.AddPropertyChanged(this.property, Bridge.fn.cacheBind(this, this.OnPropertyChanged));
             },
             dispose: function () {
-                this.element.removePropertyChanged(Bridge.fn.cacheBind(this, this.OnPropertyChanged));
+                this.element.RemovedPropertyChanged(this.property, Bridge.fn.cacheBind(this, this.OnPropertyChanged));
             },
             OnPropertyChanged: function (sender, e) {
                 if (!Bridge.referenceEquals(e.Property, this.property)) {
@@ -17343,6 +17084,66 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
 
                 this.IsMatched = Granular.Compatibility.EqualityComparer.Default.equals2(e.NewValue, this.value);
+            }
+        }
+    });
+
+    Bridge.define("Granular.Collections.DependencyPropertyEntryMap.DependencyPropertyEventEntry", {
+        inherits: [System.Windows.IDependencyPropertyValueEntry],
+        events: {
+            ValueChanged: null,
+            PropertyValueChanged: null
+        },
+        props: {
+            Kind: {
+                get: function () {
+                    return System.Windows.EntryKind.Event;
+                }
+            },
+            Property: null,
+            Value: null,
+            ValuePriority: 0
+        },
+        alias: [
+            "Kind", "System$Windows$IDependencyPropertyValueEntry$Kind",
+            "Property", "System$Windows$IDependencyPropertyValueEntry$Property",
+            "Value", "System$Windows$IDependencyPropertyValueEntry$Value",
+            "ValuePriority", "System$Windows$IDependencyPropertyValueEntry$ValuePriority",
+            "addValueChanged", "System$Windows$IDependencyPropertyValueEntry$addValueChanged",
+            "removeValueChanged", "System$Windows$IDependencyPropertyValueEntry$removeValueChanged",
+            "addPropertyValueChanged", "System$Windows$IDependencyPropertyEventEntry$addPropertyValueChanged",
+            "removePropertyValueChanged", "System$Windows$IDependencyPropertyEventEntry$removePropertyValueChanged",
+            "CoerceValue", "System$Windows$IDependencyPropertyValueEntry$CoerceValue",
+            "GetBaseValuePriority", "System$Windows$IDependencyPropertyValueEntry$GetBaseValuePriority",
+            "GetValue", "System$Windows$IDependencyPropertyValueEntry$GetValue",
+            "SetValue", "System$Windows$IDependencyPropertyValueEntry$SetValue",
+            "Replace", "System$Windows$IDependencyPropertyValueEntry$Replace"
+        ],
+        ctors: {
+            ctor: function (dependencyProperty) {
+                this.$initialize();
+                this.Property = dependencyProperty;
+            }
+        },
+        methods: {
+            CoerceValue: function () {
+                throw new System.NotImplementedException();
+            },
+            GetBaseValuePriority: function () {
+                throw new System.NotImplementedException();
+            },
+            GetValue: function (priority, flattened) {
+                throw new System.NotImplementedException();
+            },
+            SetValue: function (priority, value) {
+                throw new System.NotImplementedException();
+            },
+            Replace: function (entry) {
+                var valueChanged = this.ValueChanged;
+                entry.System$Windows$IDependencyPropertyValueEntry$addValueChanged(valueChanged);
+
+                valueChanged = this.PropertyValueChanged;
+                entry.System$Windows$IDependencyPropertyEventEntry$addPropertyValueChanged(valueChanged);
             }
         }
     });
@@ -19140,13 +18941,13 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             RegisterDependencyObject: function () {
                 if (this.currentDependencyObject != null) {
-                    this.currentDependencyObject.removePropertyChanged(Bridge.fn.cacheBind(this, this.OnDependencyObjectPropertyChanged));
+                    this.currentDependencyObject.RemovedPropertyChanged(this.dependencyProperty, Bridge.fn.cacheBind(this, this.OnDependencyObjectPropertyChanged));
                 }
 
                 this.currentDependencyObject = Bridge.as(this.baseValue, System.Windows.DependencyObject);
 
                 if (this.currentDependencyObject != null) {
-                    this.currentDependencyObject.addPropertyChanged(Bridge.fn.cacheBind(this, this.OnDependencyObjectPropertyChanged));
+                    this.currentDependencyObject.AddPropertyChanged(this.dependencyProperty, Bridge.fn.cacheBind(this, this.OnDependencyObjectPropertyChanged));
                 }
             },
             OnDependencyObjectPropertyChanged: function (sender, e) {
@@ -19156,7 +18957,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             dispose: function () {
                 if (this.currentDependencyObject != null) {
-                    this.currentDependencyObject.removePropertyChanged(Bridge.fn.cacheBind(this, this.OnDependencyObjectPropertyChanged));
+                    this.currentDependencyObject.RemovedPropertyChanged(this.dependencyProperty, Bridge.fn.cacheBind(this, this.OnDependencyObjectPropertyChanged));
                 }
             }
         }
@@ -19530,6 +19331,264 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
     Bridge.apply($asm.$.System.Windows.DataTriggerCondition, {
         f1: function (sender, e) {
             Bridge.cast(sender, System.Windows.DataTriggerCondition).OnValueChanged(e);
+        }
+    });
+
+    Bridge.define("System.Windows.DependencyPropertyValueEntry", {
+        inherits: [System.Windows.IDependencyPropertyValueEntry],
+        statics: {
+            fields: {
+                BaseValuePriorities: 0,
+                ValuePriorities: 0,
+                BaseValueHighestPriority: 0,
+                CurrentValuePriority: 0,
+                AnimationValuePriority: 0
+            },
+            ctors: {
+                init: function () {
+                    this.BaseValuePriorities = 12;
+                    this.ValuePriorities = 14;
+                    this.BaseValueHighestPriority = 11;
+                    this.CurrentValuePriority = System.Windows.DependencyPropertyValueEntry.BaseValuePriorities;
+                    this.AnimationValuePriority = 13;
+                }
+            }
+        },
+        fields: {
+            valueChangedReentrancyLock: null,
+            value: null,
+            notifyValueChangedEventHandler: null,
+            indexedObservableValueChangedEventHandler: null,
+            observableValues: null,
+            values: null,
+            baseValuePriority: 0,
+            dependencyObject: null,
+            dependencyProperty: null,
+            coerceValueCallback: null
+        },
+        events: {
+            ValueChanged: null,
+            PropertyValueChanged: null
+        },
+        props: {
+            Kind: {
+                get: function () {
+                    return System.Windows.EntryKind.Value;
+                }
+            },
+            Value: {
+                get: function () {
+                    return this.value;
+                },
+                set: function (value) {
+                    if (Bridge.is(this.value, System.Windows.INotifyChanged)) {
+                        Bridge.cast(this.value, System.Windows.INotifyChanged).System$Windows$INotifyChanged$removeChanged(this.NotifyValueChangedEventHandler);
+                    }
+
+                    this.value = value;
+
+                    if (Bridge.is(this.value, System.Windows.INotifyChanged)) {
+                        Bridge.cast(this.value, System.Windows.INotifyChanged).System$Windows$INotifyChanged$addChanged(this.NotifyValueChangedEventHandler);
+                    }
+                }
+            },
+            ValuePriority: 0,
+            Property: {
+                get: function () {
+                    return this.dependencyProperty;
+                }
+            },
+            NotifyValueChangedEventHandler: {
+                get: function () {
+                    if (Bridge.staticEquals(this.notifyValueChangedEventHandler, null)) {
+                        this.notifyValueChangedEventHandler = Bridge.fn.cacheBind(this, this.OnValueNotifyChanged);
+                    }
+
+                    return this.notifyValueChangedEventHandler;
+                }
+            },
+            IndexedObservableValueChangedEventHandler: {
+                get: function () {
+                    if (Bridge.staticEquals(this.indexedObservableValueChangedEventHandler, null)) {
+                        this.indexedObservableValueChangedEventHandler = Bridge.fn.cacheBind(this, this.OnIndexedObservableValueChanged);
+                    }
+
+                    return this.indexedObservableValueChangedEventHandler;
+                }
+            }
+        },
+        alias: [
+            "Kind", "System$Windows$IDependencyPropertyValueEntry$Kind",
+            "addValueChanged", "System$Windows$IDependencyPropertyValueEntry$addValueChanged",
+            "removeValueChanged", "System$Windows$IDependencyPropertyValueEntry$removeValueChanged",
+            "addPropertyValueChanged", "System$Windows$IDependencyPropertyEventEntry$addPropertyValueChanged",
+            "removePropertyValueChanged", "System$Windows$IDependencyPropertyEventEntry$removePropertyValueChanged",
+            "Value", "System$Windows$IDependencyPropertyValueEntry$Value",
+            "ValuePriority", "System$Windows$IDependencyPropertyValueEntry$ValuePriority",
+            "Property", "System$Windows$IDependencyPropertyValueEntry$Property",
+            "GetValue", "System$Windows$IDependencyPropertyValueEntry$GetValue",
+            "SetValue", "System$Windows$IDependencyPropertyValueEntry$SetValue",
+            "GetBaseValuePriority", "System$Windows$IDependencyPropertyValueEntry$GetBaseValuePriority",
+            "CoerceValue", "System$Windows$IDependencyPropertyValueEntry$CoerceValue",
+            "Replace", "System$Windows$IDependencyPropertyValueEntry$Replace"
+        ],
+        ctors: {
+            init: function () {
+                this.valueChangedReentrancyLock = new Granular.ReentrancyLock();
+            },
+            ctor: function (dependencyObject, dependencyProperty, coerceValueCallback) {
+                if (coerceValueCallback === void 0) { coerceValueCallback = null; }
+
+                this.$initialize();
+                this.dependencyObject = dependencyObject;
+                this.dependencyProperty = dependencyProperty;
+                this.coerceValueCallback = coerceValueCallback;
+
+                this.values = System.Array.init(14, null, System.Object);
+                for (var i = 0; i < this.values.length; i = (i + 1) | 0) {
+                    this.values[System.Array.index(i, this.values)] = System.Windows.Data.ObservableValue.UnsetValue;
+                }
+            }
+        },
+        methods: {
+            GetValue: function (priority, flattened) {
+                if (this.observableValues != null && this.observableValues[System.Array.index(priority, this.observableValues)] != null) {
+                    return flattened ? this.observableValues[System.Array.index(priority, this.observableValues)].Value : this.observableValues[System.Array.index(priority, this.observableValues)].BaseValue;
+                }
+
+                return this.values[System.Array.index(priority, this.values)];
+            },
+            SetValue: function (priority, value) {
+                if (this.observableValues != null && this.observableValues[System.Array.index(priority, this.observableValues)] != null) {
+                    this.observableValues[System.Array.index(priority, this.observableValues)].BaseValue = value;
+                    return;
+                }
+
+                var oldValue = this.values[System.Array.index(priority, this.values)];
+
+                if (Bridge.is(value, System.Windows.Data.IObservableValue)) {
+                    if (this.observableValues == null) {
+                        this.observableValues = System.Array.init(14, null, System.Windows.DependencyPropertyValueEntry.IndexedObservableValue);
+                    }
+
+                    var indexedObservableValue = new System.Windows.DependencyPropertyValueEntry.IndexedObservableValue(priority, oldValue);
+                    indexedObservableValue.addValueChanged(this.IndexedObservableValueChangedEventHandler);
+
+                    this.observableValues[System.Array.index(priority, this.observableValues)] = indexedObservableValue;
+                    this.values[System.Array.index(priority, this.values)] = System.Windows.Data.ObservableValue.UnsetValue;
+
+                    indexedObservableValue.BaseValue = value;
+                    return;
+                }
+
+                if (Granular.Compatibility.EqualityComparer.Default.equals2(oldValue, value)) {
+                    return;
+                }
+
+                this.values[System.Array.index(priority, this.values)] = value;
+
+                this.OnValueChanged(priority, value);
+            },
+            GetBaseValuePriority: function () {
+                if (this.baseValuePriority > System.Windows.DependencyPropertyValueEntry.BaseValueHighestPriority) {
+                    this.baseValuePriority = System.Windows.DependencyPropertyValueEntry.BaseValueHighestPriority;
+
+                    while (this.baseValuePriority > 0 && !this.IsValueValid(this.GetValue(this.baseValuePriority, true))) {
+                        this.baseValuePriority = (this.baseValuePriority - 1) | 0;
+                    }
+                }
+
+                return this.baseValuePriority;
+            },
+            CoerceValue: function () {
+                if (Bridge.staticEquals(this.coerceValueCallback, null)) {
+                    return;
+                }
+
+                var oldValue = this.Value;
+                var newValue = this.coerceValueCallback(this.dependencyObject, this.GetValue(this.ValuePriority, true));
+
+                if (Granular.Compatibility.EqualityComparer.Default.equals2(oldValue, newValue)) {
+                    return;
+                }
+
+                this.Value = newValue;
+                System.Windows.DependencyPropertyChangedEventHandlerExtensions.Raise(this.ValueChanged, this, new System.Windows.DependencyPropertyChangedEventArgs.$ctor1(this.dependencyProperty, oldValue, newValue));
+            },
+            OnIndexedObservableValueChanged: function (sender, oldValue, newValue) {
+                this.OnValueChanged(Bridge.cast(sender, System.Windows.DependencyPropertyValueEntry.IndexedObservableValue).Index, newValue);
+            },
+            OnValueChanged: function (newValuePriority, newValue) {
+                var $t;
+                if (!Granular.ReentrancyLock.op_Implicit(this.valueChangedReentrancyLock)) {
+                    $t = this.valueChangedReentrancyLock.Enter();
+                    try {
+                        this.OnValueChangedCore(newValuePriority, newValue);
+                    }
+                    finally {
+                        if (Bridge.hasValue($t)) {
+                            $t.System$IDisposable$dispose();
+                        }
+                    }
+                }
+            },
+            OnValueChangedCore: function (newValuePriority, newValue) {
+                if (this.ValuePriority > newValuePriority) {
+                    if (this.baseValuePriority <= newValuePriority && newValuePriority <= System.Windows.DependencyPropertyValueEntry.BaseValueHighestPriority) {
+                        this.baseValuePriority = 12; // invalidate baseValuePriority
+                    }
+
+                    return;
+                }
+
+                var oldValue = this.Value;
+                var isNewValueValid = this.IsValueValid(newValue);
+
+                if (this.ValuePriority === newValuePriority && isNewValueValid && Bridge.staticEquals(this.coerceValueCallback, null)) {
+                    this.Value = newValue;
+                    this.OnPropertyValueChanged(new System.Windows.DependencyPropertyChangedEventArgs.$ctor1(this.dependencyProperty, oldValue, newValue)); // since this was already the value priority and there is no coercion, Value must have been changed here
+                    return;
+                }
+
+                if (this.ValuePriority < newValuePriority && !isNewValueValid) {
+                    return;
+                }
+
+                while (!isNewValueValid && newValuePriority > 0) {
+                    newValuePriority = (newValuePriority - 1) | 0;
+                    newValue = this.GetValue(newValuePriority, true);
+                    isNewValueValid = this.IsValueValid(newValue);
+                }
+
+                if (this.ValuePriority !== newValuePriority) {
+                    this.ValuePriority = newValuePriority;
+                    this.baseValuePriority = newValuePriority; // possible invalidation of baseValuePriority
+                }
+
+                if (!Bridge.staticEquals(this.coerceValueCallback, null)) {
+                    newValue = this.coerceValueCallback(this.dependencyObject, newValue);
+                }
+
+                if (Granular.Compatibility.EqualityComparer.Default.equals2(oldValue, newValue)) {
+                    return;
+                }
+
+                this.Value = newValue;
+                this.OnPropertyValueChanged(new System.Windows.DependencyPropertyChangedEventArgs.$ctor1(this.dependencyProperty, oldValue, newValue));
+            },
+            OnValueNotifyChanged: function (sender, e) {
+                this.OnPropertyValueChanged(new System.Windows.DependencyPropertyChangedEventArgs.ctor(this.dependencyProperty, this.Value));
+            },
+            OnPropertyValueChanged: function (args) {
+                !Bridge.staticEquals(this.ValueChanged, null) ? this.ValueChanged(this, args) : null;
+                !Bridge.staticEquals(this.PropertyValueChanged, null) ? this.PropertyValueChanged(this.dependencyObject, args) : null;
+            },
+            IsValueValid: function (newValue) {
+                return !Bridge.referenceEquals(newValue, System.Windows.Data.ObservableValue.UnsetValue) && this.dependencyProperty.IsValidValue(newValue);
+            },
+            Replace: function (entry) {
+                throw new Granular.Exception("Can't replace dependency property value entry");
+            }
         }
     });
 
@@ -20675,6 +20734,90 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
     Bridge.define("System.Windows.Media.IRadialGradientBrushRenderResource", {
         inherits: [System.Windows.Media.IGradientBrushRenderResource],
         $kind: "interface"
+    });
+
+    Bridge.define("System.Windows.ReadOnlyDependencyPropertyValueEntry", {
+        inherits: [System.Windows.IDependencyPropertyValueEntry],
+        fields: {
+            source: null
+        },
+        events: {
+            ValueChanged: null,
+            PropertyValueChanged: null
+        },
+        props: {
+            Kind: {
+                get: function () {
+                    return System.Windows.EntryKind.Value;
+                }
+            },
+            Value: {
+                get: function () {
+                    return this.source.System$Windows$IDependencyPropertyValueEntry$Value;
+                }
+            },
+            ValuePriority: {
+                get: function () {
+                    return this.source.System$Windows$IDependencyPropertyValueEntry$ValuePriority;
+                }
+            },
+            Property: {
+                get: function () {
+                    return this.source.System$Windows$IDependencyPropertyValueEntry$Property;
+                }
+            }
+        },
+        alias: [
+            "Kind", "System$Windows$IDependencyPropertyValueEntry$Kind",
+            "addValueChanged", "System$Windows$IDependencyPropertyValueEntry$addValueChanged",
+            "removeValueChanged", "System$Windows$IDependencyPropertyValueEntry$removeValueChanged",
+            "addPropertyValueChanged", "System$Windows$IDependencyPropertyEventEntry$addPropertyValueChanged",
+            "removePropertyValueChanged", "System$Windows$IDependencyPropertyEventEntry$removePropertyValueChanged",
+            "Value", "System$Windows$IDependencyPropertyValueEntry$Value",
+            "ValuePriority", "System$Windows$IDependencyPropertyValueEntry$ValuePriority",
+            "Property", "System$Windows$IDependencyPropertyValueEntry$Property",
+            "GetValue", "System$Windows$IDependencyPropertyValueEntry$GetValue",
+            "SetValue", "System$Windows$IDependencyPropertyValueEntry$SetValue",
+            "GetBaseValuePriority", "System$Windows$IDependencyPropertyValueEntry$GetBaseValuePriority",
+            "CoerceValue", "System$Windows$IDependencyPropertyValueEntry$CoerceValue",
+            "Replace", "System$Windows$IDependencyPropertyValueEntry$Replace"
+        ],
+        ctors: {
+            ctor: function (source) {
+                this.$initialize();
+                this.source = source;
+
+                source.System$Windows$IDependencyPropertyValueEntry$addValueChanged(Bridge.fn.bind(this, $asm.$.System.Windows.ReadOnlyDependencyPropertyValueEntry.f1));
+            }
+        },
+        methods: {
+            GetValue$1: function (flattened) {
+                return this.source.System$Windows$IDependencyPropertyValueEntry$GetValue(this.source.System$Windows$IDependencyPropertyValueEntry$ValuePriority, flattened);
+            },
+            GetValue: function (priority, flattened) {
+                return this.source.System$Windows$IDependencyPropertyValueEntry$GetValue(priority, flattened);
+            },
+            SetValue: function (priority, value) {
+                throw new Granular.Exception("Can't modify a readonly dependency property value");
+            },
+            GetBaseValuePriority: function () {
+                return this.source.System$Windows$IDependencyPropertyValueEntry$GetBaseValuePriority();
+            },
+            CoerceValue: function () {
+                this.source.System$Windows$IDependencyPropertyValueEntry$CoerceValue();
+            },
+            Replace: function (entry) {
+                throw new Granular.Exception("Can't replace dependency property value entry");
+            }
+        }
+    });
+
+    Bridge.ns("System.Windows.ReadOnlyDependencyPropertyValueEntry", $asm.$);
+
+    Bridge.apply($asm.$.System.Windows.ReadOnlyDependencyPropertyValueEntry, {
+        f1: function (sender, e) {
+            System.Windows.DependencyPropertyChangedEventHandlerExtensions.Raise(this.ValueChanged, this, e);
+        }
     });
 
     Bridge.define("System.Windows.ResourceReferenceExpression", {
