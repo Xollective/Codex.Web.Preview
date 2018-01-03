@@ -1,7 +1,7 @@
 /**
  * @version 0.3.0.0
  * @copyright Copyright ☺ 2016
- * @compiler Bridge.NET 16.3.2
+ * @compiler Bridge.NET 16.6.0
  */
 Bridge.assembly("Granular.Host", function ($asm, globals) {
     "use strict";
@@ -322,7 +322,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                     throw new Granular.Exception("Can't convert {0} to pixel string", [Bridge.box(value, System.Double, System.Double.format, System.Double.getHashCode)]);
                 }
 
-                return System.String.format("{0}px", Bridge.box(Bridge.Math.round(value, 2, 6), System.Double, System.Double.format, System.Double.getHashCode));
+                return System.String.format("{0}px", [Bridge.box(Bridge.Math.round(value, 2, 6), System.Double, System.Double.format, System.Double.getHashCode)]);
             },
             ToPixelString$1: function (point) {
                 return System.String.format("{0} {1}", this.ToPixelString(point.X), this.ToPixelString(point.Y));
@@ -338,7 +338,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                     throw new Granular.Exception("Can't convert Double.NaN to percent string");
                 }
 
-                return System.String.format("{0}%", Bridge.box(Bridge.Math.round(value * 100, 2, 6), System.Double, System.Double.format, System.Double.getHashCode));
+                return System.String.format("{0}%", [Bridge.box(Bridge.Math.round(value * 100, 2, 6), System.Double, System.Double.format, System.Double.getHashCode)]);
             },
             ToPercentString$1: function (point) {
                 return System.String.format("{0} {1}", this.ToPercentString(point.X), this.ToPercentString(point.Y));
@@ -348,10 +348,10 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                     throw new Granular.Exception("Can't convert Double.NaN to degrees string");
                 }
 
-                return System.String.format("{0}deg", Bridge.box(Bridge.Math.round(value, 2, 6), System.Double, System.Double.format, System.Double.getHashCode));
+                return System.String.format("{0}deg", [Bridge.box(Bridge.Math.round(value, 2, 6), System.Double, System.Double.format, System.Double.getHashCode)]);
             },
             ToImplicitValueString: function (value) {
-                return System.String.format("{0}", Bridge.box(Bridge.Math.round(value, 2, 6), System.Double, System.Double.format, System.Double.getHashCode));
+                return System.String.format("{0}", [Bridge.box(Bridge.Math.round(value, 2, 6), System.Double, System.Double.format, System.Double.getHashCode)]);
             },
             ToImplicitValueString$1: function (point) {
                 return System.String.format("{0} {1}", this.ToImplicitValueString(point.X), this.ToImplicitValueString(point.Y));
@@ -366,7 +366,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                 return this.ToColorString(System.Windows.Media.ColorExtensions.ApplyOpacity(brush.Color, brush.Opacity));
             },
             ToUrlString: function (url) {
-                return System.String.format("url({0})", url);
+                return System.String.format("url({0})", [url]);
             },
             ToLinearGradientString: function (brush, targetRect) {
                 if (System.Windows.Size.op_Equality(targetRect.Size, System.Windows.Size.Zero)) {
@@ -562,7 +562,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                 if (cursor.ImageSource != null) {
                     var urlString = this.ToUrlString(Bridge.cast(cursor.ImageSource.GetRenderResource(factory), Granular.Host.Render.HtmlImageSourceRenderResource).Url);
 
-                    return !System.Windows.Point.IsNullOrEmpty(cursor.Hotspot) ? System.String.format("{0} {1}, default", urlString, this.ToImplicitValueString$1(cursor.Hotspot)) : System.String.format("{0}, default", urlString);
+                    return !System.Windows.Point.IsNullOrEmpty(cursor.Hotspot) ? System.String.format("{0} {1}, default", urlString, this.ToImplicitValueString$1(cursor.Hotspot)) : System.String.format("{0}, default", [urlString]);
                 }
 
                 switch (cursor.CursorType) {
@@ -847,7 +847,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
             return System.String.format("{0}, {1}", s1, s2);
         },
         f5: function (familyName) {
-            return System.String.format("\"{0}\"", familyName);
+            return System.String.format("\"{0}\"", [familyName]);
         }
     });
 
@@ -1656,7 +1656,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                 return System.Double.format(Bridge.Math.round(value, 2, 6));
             },
             ToPixelString: function (size) {
-                return System.String.format("{0}px", Bridge.box(size, System.Double, System.Double.format, System.Double.getHashCode));
+                return System.String.format("{0}px", [Bridge.box(size, System.Double, System.Double.format, System.Double.getHashCode)]);
             },
             ToColorString: function (color) {
                 return System.String.format("#{0:x2}{1:x2}{2:x2}", Bridge.box(color.R, System.Byte), Bridge.box(color.G, System.Byte), Bridge.box(color.B, System.Byte));
@@ -1774,7 +1774,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
 
     Bridge.apply($asm.$.Granular.Host.SvgValueConverter, {
         f1: function (familyName) {
-            return System.String.format("\"{0}\"", familyName);
+            return System.String.format("\"{0}\"", [familyName]);
         },
         f2: function (s1, s2) {
             return System.String.format("{0}, {1}", s1, s2);
@@ -1953,7 +1953,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                 this.svgDefinitionContainer = svgDefinitionContainer;
 
                 var elementName = System.String.format("{0}{1}", tagName, Bridge.box(svgDefinitionContainer.GetNextId(), System.Int32));
-                this.Uri = System.String.format("url(#{0})", elementName);
+                this.Uri = System.String.format("url(#{0})", [elementName]);
                 this.HtmlElement.setAttribute("id", elementName);
             }
         },
@@ -2053,8 +2053,8 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
 
                 this.pathHtmlElement = Granular.Host.SvgDocument.CreateElement("path");
 
-                var elementName = System.String.format("clipPath{0}", Bridge.box(svgDefinitionContainer.GetNextId(), System.Int32));
-                this.Uri = System.String.format("url(#{0})", elementName);
+                var elementName = System.String.format("clipPath{0}", [Bridge.box(svgDefinitionContainer.GetNextId(), System.Int32)]);
+                this.Uri = System.String.format("url(#{0})", [elementName]);
                 this.HtmlElement.setAttribute("id", elementName);
                 this.HtmlElement.appendChild(this.pathHtmlElement);
             }
@@ -4347,7 +4347,7 @@ Bridge.assembly("Granular.Host", function ($asm, globals) {
                 },
                 ResolveElementTagName: function (type) {
                     var typeName = System.String.replaceAll(Bridge.Reflection.getTypeName(type), String.fromCharCode(36), String.fromCharCode(95));
-                    return System.Linq.Enumerable.from(Granular.Host.HtmlDefinition.Tags).contains(typeName.toLowerCase()) ? System.String.format("{0}_", typeName) : typeName;
+                    return System.Linq.Enumerable.from(Granular.Host.HtmlDefinition.Tags).contains(typeName.toLowerCase()) ? System.String.format("{0}_", [typeName]) : typeName;
                 },
                 GetElementId: function (target) {
                     var nameAttribute = Bridge.as(System.Linq.Enumerable.from(Bridge.Reflection.getAttributes(Bridge.getType(target), System.Windows.Markup.RuntimeNamePropertyAttribute, true)).firstOrDefault(null, null), System.Windows.Markup.RuntimeNamePropertyAttribute);

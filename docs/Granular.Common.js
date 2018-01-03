@@ -1,7 +1,7 @@
 /**
  * @version 0.3.0.0
  * @copyright Copyright ☺ 2016
- * @compiler Bridge.NET 16.3.2
+ * @compiler Bridge.NET 16.6.0
  */
 Bridge.assembly("Granular.Common", function ($asm, globals) {
     "use strict";
@@ -1424,7 +1424,7 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
                 this.getAdditionalStatus = getAdditionalStatus;
 
                 this.lastReportTime = System.DateTime.getNow();
-                System.Console.WriteLine(System.String.format("{0} - HitCounter initialized", name));
+                System.Console.WriteLine(System.String.format("{0} - HitCounter initialized", [name]));
             }
         },
         methods: {
@@ -2373,12 +2373,12 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
 
                 var header = (this.binaryReader.ReadInt32()) >>> 0;
                 if (header !== 3203386062) {
-                    throw new Granular.Exception(System.String.format("Invalid ResourceSet header ({0})", Bridge.box(header, System.UInt32)));
+                    throw new Granular.Exception(System.String.format("Invalid ResourceSet header ({0})", [Bridge.box(header, System.UInt32)]));
                 }
 
                 var version = this.binaryReader.ReadInt32();
                 if (version !== 1) {
-                    throw new Granular.Exception(System.String.format("Unsupported ResourceSet version ({0})", Bridge.box(version, System.Int32)));
+                    throw new Granular.Exception(System.String.format("Unsupported ResourceSet version ({0})", [Bridge.box(version, System.Int32)]));
                 }
 
                 var bytesToSkip = this.binaryReader.ReadInt32();
@@ -2429,7 +2429,7 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
 
                     var resourceTypeCode = System.Resources.ResourceSet.Read7BitEncodedInt(this.binaryReader);
                     if (resourceTypeCode !== 33) {
-                        throw new Granular.Exception(System.String.format("Unsupported ResourceTypeCode ({0})", Bridge.box(resourceTypeCode, System.Int32)));
+                        throw new Granular.Exception(System.String.format("Unsupported ResourceTypeCode ({0})", [Bridge.box(resourceTypeCode, System.Int32)]));
                     }
 
                     var length = this.binaryReader.ReadInt32();
@@ -3143,7 +3143,7 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
         methods: {
             toString: function () {
                 var count = Granular.Compatibility.Linq.Enumerable.Count(Bridge.global.System.Windows.Markup.NamespaceDeclaration, this.items);
-                return count === 0 ? "XamlNamespaces.Empty" : System.String.format("XamlNamespaces[{0}]", Bridge.box(count, System.Int32));
+                return count === 0 ? "XamlNamespaces.Empty" : System.String.format("XamlNamespaces[{0}]", [Bridge.box(count, System.Int32)]);
             },
             ContainsPrefix: function (prefix) {
                 return Granular.Compatibility.Linq.Enumerable.Any$1(Bridge.global.System.Windows.Markup.NamespaceDeclaration, this.items, function (item) {

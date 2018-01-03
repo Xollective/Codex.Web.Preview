@@ -1,7 +1,7 @@
 /**
  * @version 0.3.0.0
  * @copyright Copyright ☺ 2016
- * @compiler Bridge.NET 16.3.2
+ * @compiler Bridge.NET 16.6.0
  */
 Bridge.assembly("Granular.Presentation", function ($asm, globals) {
     "use strict";
@@ -1610,7 +1610,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         },
         methods: {
             toString: function () {
-                return this.IsUniform ? System.String.format("CornerRadius({0})", Bridge.box(this.TopLeft, System.Double, System.Double.format, System.Double.getHashCode)) : System.String.format("CornerRadius({0}, {1}, {2}, {3})", Bridge.box(this.TopLeft, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.TopRight, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.BottomRight, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.BottomLeft, System.Double, System.Double.format, System.Double.getHashCode));
+                return this.IsUniform ? System.String.format("CornerRadius({0})", [Bridge.box(this.TopLeft, System.Double, System.Double.format, System.Double.getHashCode)]) : System.String.format("CornerRadius({0}, {1}, {2}, {3})", Bridge.box(this.TopLeft, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.TopRight, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.BottomRight, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.BottomLeft, System.Double, System.Double.format, System.Double.getHashCode));
             },
             equals: function (obj) {
                 var other = Bridge.as(obj, System.Windows.CornerRadius);
@@ -2008,7 +2008,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         },
         methods: {
             toString: function () {
-                return System.String.format("{{{0}}}", this.name);
+                return System.String.format("{{{0}}}", [this.name]);
             }
         }
     });
@@ -2683,7 +2683,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     return System.Windows.Markup.XamlLoader.Load(System.Windows.Markup.XamlParser.Parse(resourceString, resourceUri));
                 },
                 TryResolveResourceSet: function (assembly, resourceSet) {
-                    var resourceStream = System.AssemblyExtensions.GetManifestResourceStream(assembly, System.String.format("{0}.g.resources", System.AssemblyExtensions.GetName(assembly).Name));
+                    var resourceStream = System.AssemblyExtensions.GetManifestResourceStream(assembly, System.String.format("{0}.g.resources", [System.AssemblyExtensions.GetName(assembly).Name]));
 
                     if (resourceStream == null) {
                         resourceSet.v = null;
@@ -3209,7 +3209,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         },
         methods: {
             toString: function () {
-                return System.String.format("Cursor({0})", this.ImageSource != null ? this.ImageSource.toString() : System.Enum.toString(System.Windows.Input.CursorType, this.CursorType));
+                return System.String.format("Cursor({0})", [this.ImageSource != null ? this.ImageSource.toString() : System.Enum.toString(System.Windows.Input.CursorType, this.CursorType)]);
             }
         }
     });
@@ -4557,7 +4557,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.arrangeQueue.remove(element);
             },
             AddUpdatedElement: function (element) {
-                var $t;
+                var $t, $t1;
                 if (this.updateLayoutOperation == null || this.updateLayoutOperation.Status !== System.Windows.Threading.DispatcherOperationStatus.Executing) {
                     // element was updated manually (not through the UpdateLayout loop)
                     $t = Bridge.getEnumerator(System.Windows.LayoutManager.GetElementPath(element), System.Windows.UIElement);
@@ -4573,8 +4573,20 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     }
                     return;
                 }
-                Granular.Extensions.CollectionExtensions.AddRange$1(Bridge.global.System.Windows.UIElement, this.updatedElements, System.Windows.LayoutManager.GetElementPath(element));
-            },
+
+                $t1 = Bridge.getEnumerator(System.Windows.LayoutManager.GetElementPath(element), System.Windows.UIElement);
+                try {
+                    while ($t1.moveNext()) {
+                        var elementPathItem = $t1.Current;
+                        if (!this.updatedElements.add(elementPathItem)) {
+                            return;
+                        }
+                    }
+                } finally {
+                    if (Bridge.is($t1, System.IDisposable)) {
+                        $t1.System$IDisposable$dispose();
+                    }
+                }},
             BeginUpdateLayout: function () {
                 if (this.updateLayoutOperation == null || this.updateLayoutOperation.Status === System.Windows.Threading.DispatcherOperationStatus.Completed) {
                     this.updateLayoutOperation = System.Windows.Threading.Dispatcher.CurrentDispatcher.InvokeAsync(Bridge.fn.cacheBind(this, this.UpdateLayout), System.Windows.Threading.DispatcherPriority.Render);
@@ -5449,7 +5461,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                         return true;
                     }
 
-                    var extensionName = new System.Windows.Markup.XamlName(System.String.format("{0}Extension", name.LocalName), name.NamespaceName);
+                    var extensionName = new System.Windows.Markup.XamlName(System.String.format("{0}Extension", [name.LocalName]), name.NamespaceName);
 
                     return System.Windows.Markup.TypeParser.TryGetType$2(name, type) || System.Windows.Markup.TypeParser.TryGetType$2(extensionName, type);
                 },
@@ -12138,7 +12150,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     return new System.Windows.TemplateKey(Bridge.cast(System.Windows.Markup.ElementFactory.FromValue(System.Linq.Enumerable.from(dataTypeMember.Values).single(), Function, element.Namespaces, element.SourceUri).System$Windows$Markup$IElementFactory$CreateElement(new System.Windows.Markup.InitializeContext.ctor()), Function));
                 }
 
-                throw new Granular.Exception(System.String.format("Can't create value key from \"{0}\"", element.Name));
+                throw new Granular.Exception(System.String.format("Can't create value key from \"{0}\"", [element.Name]));
             }
         }
     });
@@ -12180,7 +12192,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 return this.DependencyProperty.getHashCode();
             },
             toString: function () {
-                return System.String.format("({0})", this.DependencyProperty);
+                return System.String.format("({0})", [this.DependencyProperty]);
             },
             TryGetDependencyProperty: function (containingType, dependencyProperty) {
                 dependencyProperty.v = this.DependencyProperty;
@@ -12747,7 +12759,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 return this.PropertyName.getHashCode();
             },
             toString: function () {
-                var propertyName = this.PropertyName.HasContainingTypeName ? System.String.format("({0})", this.PropertyName.LocalName) : this.PropertyName.LocalName;
+                var propertyName = this.PropertyName.HasContainingTypeName ? System.String.format("({0})", [this.PropertyName.LocalName]) : this.PropertyName.LocalName;
                 var indexRawValues = Granular.Compatibility.Linq.Enumerable.Aggregate(System.String, Granular.Compatibility.Linq.Enumerable.DefaultIfEmpty$1(System.String, this.IndexRawValues, ""), $asm.$.System.Windows.IndexPropertyPathElement.f1);
 
                 return System.String.format("{0}[{1}]", propertyName, indexRawValues);
@@ -13810,7 +13822,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                             var isShared = Granular.Compatibility.Linq.Enumerable.All(Bridge.global.System.Windows.Markup.XamlMember, contentChild.Directives, $asm.$.System.Windows.Markup.ElementDictionaryContentInitializer.f2);
 
                             if (!isShared && !isValueProviderSupported) {
-                                throw new Granular.Exception(System.String.format("Can't add a non shared value to \"{0}\" as it does not declare a \"SupportsValueProvider\" attribute", Bridge.Reflection.getTypeFullName(dictionaryType)));
+                                throw new Granular.Exception(System.String.format("Can't add a non shared value to \"{0}\" as it does not declare a \"SupportsValueProvider\" attribute", [Bridge.Reflection.getTypeFullName(dictionaryType)]));
                             }
 
                             var contentChildFactory = isValueProviderSupported ? new System.Windows.Markup.ElementDictionaryContentInitializer.DeferredValueFactory(contentChild, valueType, isShared) : System.Windows.Markup.ElementFactory.FromXamlElement(contentChild, valueType);
@@ -16405,7 +16417,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 return this.PropertyName.getHashCode();
             },
             toString: function () {
-                return this.PropertyName.HasContainingTypeName ? System.String.format("({0})", this.PropertyName.LocalName) : this.PropertyName.LocalName;
+                return this.PropertyName.HasContainingTypeName ? System.String.format("({0})", [this.PropertyName.LocalName]) : this.PropertyName.LocalName;
             },
             TryGetValue: function (target, value) {
                 return System.Windows.PropertyPathElement.TryGetValue(target, this.PropertyName, value);
@@ -17027,7 +17039,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 return this.hashCode;
             },
             toString: function () {
-                return System.String.format("StyleKey({0})", Bridge.Reflection.getTypeName(this.TargetType));
+                return System.String.format("StyleKey({0})", [Bridge.Reflection.getTypeName(this.TargetType)]);
             }
         }
     });
@@ -17047,7 +17059,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     return new System.Windows.StyleKey(Bridge.cast(System.Windows.Markup.ElementFactory.FromValue(System.Linq.Enumerable.from(targetTypeMember.Values).single(), Function, element.Namespaces, element.SourceUri).System$Windows$Markup$IElementFactory$CreateElement(new System.Windows.Markup.InitializeContext.ctor()), Function));
                 }
 
-                throw new Granular.Exception(System.String.format("Can't create value key from \"{0}\"", element.Name));
+                throw new Granular.Exception(System.String.format("Can't create value key from \"{0}\"", [element.Name]));
             }
         }
     });
@@ -17185,7 +17197,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 return this.hashCode;
             },
             toString: function () {
-                return System.String.format("TemplateKey({0})", Bridge.Reflection.getTypeName(this.TargetType));
+                return System.String.format("TemplateKey({0})", [Bridge.Reflection.getTypeName(this.TargetType)]);
             }
         }
     });
@@ -17339,7 +17351,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             ctors: {
                 init: function () {
                     this.OpacityProperty = System.Windows.DependencyProperty.Register("Opacity", System.Double, System.Windows.UIElement, new System.Windows.FrameworkPropertyMetadata.$ctor6(Bridge.box(1.0, System.Double, System.Double.format, System.Double.getHashCode), $asm.$.System.Windows.UIElement.f1));
-                    this.VisibilityProperty = System.Windows.DependencyProperty.Register("Visibility", System.Windows.Visibility, System.Windows.UIElement, new System.Windows.FrameworkPropertyMetadata.$ctor3(Bridge.box(System.Windows.Visibility.Visible, System.Windows.Visibility, System.Enum.toStringFn(System.Windows.Visibility)), System.Windows.FrameworkPropertyMetadataOptions.AffectsParentMeasure, $asm.$.System.Windows.UIElement.f2));
+                    this.VisibilityProperty = System.Windows.DependencyProperty.Register("Visibility", System.Windows.Visibility, System.Windows.UIElement, new System.Windows.FrameworkPropertyMetadata.$ctor3(Bridge.box(System.Windows.Visibility.Visible, System.Windows.Visibility, System.Enum.toStringFn(System.Windows.Visibility)), 14, $asm.$.System.Windows.UIElement.f2));
                     this.IsVisiblePropertyKey = System.Windows.DependencyProperty.RegisterReadOnly("IsVisible", System.Boolean, System.Windows.UIElement, new System.Windows.FrameworkPropertyMetadata.$ctor7(Bridge.box(true, System.Boolean, System.Boolean.toString), $asm.$.System.Windows.UIElement.f3, $asm.$.System.Windows.UIElement.f4));
                     this.IsVisibleProperty = System.Windows.UIElement.IsVisiblePropertyKey.DependencyProperty;
                     this.IsEnabledProperty = System.Windows.DependencyProperty.Register("IsEnabled", System.Boolean, System.Windows.UIElement, new System.Windows.FrameworkPropertyMetadata.$ctor7(Bridge.box(true, System.Boolean, System.Boolean.toString), $asm.$.System.Windows.UIElement.f5, $asm.$.System.Windows.UIElement.f6));
@@ -22554,7 +22566,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         },
         methods: {
             toString: function () {
-                return this.IsUniform ? System.String.format("Thickness({0})", Bridge.box(this.Left, System.Double, System.Double.format, System.Double.getHashCode)) : System.String.format("Thickness({0}, {1}, {2}, {3})", Bridge.box(this.Top, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.Right, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.Bottom, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.Left, System.Double, System.Double.format, System.Double.getHashCode));
+                return this.IsUniform ? System.String.format("Thickness({0})", [Bridge.box(this.Left, System.Double, System.Double.format, System.Double.getHashCode)]) : System.String.format("Thickness({0}, {1}, {2}, {3})", Bridge.box(this.Top, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.Right, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.Bottom, System.Double, System.Double.format, System.Double.getHashCode), Bridge.box(this.Left, System.Double, System.Double.format, System.Double.getHashCode));
             },
             equals: function (obj) {
                 var other = Bridge.as(obj, System.Windows.Thickness);
@@ -27178,7 +27190,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         },
         methods: {
             toString: function () {
-                return System.String.format("SolidColorBrush({0})", this.Color);
+                return System.String.format("SolidColorBrush({0})", [this.Color]);
             },
             CreateRenderResource: function (factory) {
                 return factory.System$Windows$Media$IRenderElementFactory$CreateSolidColorBrushRenderResource();

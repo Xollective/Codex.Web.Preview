@@ -1,7 +1,7 @@
 /**
  * @version 0.3.0.0
  * @copyright Copyright ☺ 2016
- * @compiler Bridge.NET 16.3.2
+ * @compiler Bridge.NET 16.6.0
  */
 Bridge.assembly("Granular.Presentation.Generic", function ($asm, globals) {
     "use strict";
