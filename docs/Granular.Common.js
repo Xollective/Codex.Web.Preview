@@ -2288,6 +2288,8 @@ Bridge.assembly("Granular.Common", function ($asm, globals) {
         }
     }; });
 
+    Bridge.define("System.Helpers");
+
     Bridge.define("System.Linq.EnumerableExtensions", {
         statics: {
             methods: {

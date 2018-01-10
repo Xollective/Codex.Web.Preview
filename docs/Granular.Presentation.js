@@ -277,7 +277,19 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
 
     Bridge.define("System.Windows.DependencyObject", {
         statics: {
+            fields: {
+                s_typeObjectCache: null
+            },
+            ctors: {
+                init: function () {
+                    this.s_typeObjectCache = Granular.Collections.CacheDictionary$2(Function,System.Windows.DependencyTypeObject).CreateUsingStringKeys$1(System.Windows.DependencyObject.ResolveTypeObject, $asm.$.System.Windows.DependencyObject.f1);
+                }
+            },
             methods: {
+                ResolveTypeObject: function (key, value) {
+                    value.v = new System.Windows.DependencyTypeObject(key);
+                    return true;
+                },
                 VerifyReadOnlyProperty: function (dependencyProperty, dependencyPropertyKey) {
                     if (dependencyProperty.IsReadOnly && (dependencyPropertyKey == null || !Bridge.referenceEquals(dependencyPropertyKey.DependencyProperty, dependencyProperty) || !System.Windows.DependencyProperty.IsValidReadOnlyKey(dependencyPropertyKey))) {
                         throw new Granular.Exception("Can't modify the readonly dependency property \"{0}\" without its key", [dependencyProperty]);
@@ -291,7 +303,8 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             inheritanceParent: null,
             entryValueChangedEventHandler: null,
             containedEntryValueChangedEventHandler: null,
-            parentPropertyChangedEventHandler: null
+            parentPropertyChangedEventHandler: null,
+            typeObject: null
         },
         events: {
             PropertyChanged: null
@@ -305,6 +318,8 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.entryValueChangedEventHandler = Bridge.fn.cacheBind(this, this.OnEntryValueChanged);
                 this.containedEntryValueChangedEventHandler = Bridge.fn.cacheBind(this, this.OnContainedEntryValueChanged);
                 this.parentPropertyChangedEventHandler = Bridge.fn.cacheBind(this, this.OnParentPropertyChanged);
+
+                this.typeObject = System.Windows.DependencyObject.s_typeObjectCache.GetValue(Bridge.getType(this));
             }
         },
         methods: {
@@ -326,13 +341,31 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 return this.ContainsValue(dependencyPropertyKey.DependencyProperty);
             },
             GetValue: function (dependencyProperty) {
+                var key = dependencyProperty.StringKey;
+                var value = this[key];
+                if (!(value === undefined)) {
+                    return value;
+                }
+
+                value = this.typeObject[key];
+                if (!(value === undefined)) {
+                    return value;
+                }
+                return this.GetValueSlow(dependencyProperty);
+            },
+            GetValue$1: function (dependencyPropertyKey) {
+                return this.GetValue(dependencyPropertyKey.DependencyProperty);
+            },
+            GetValueSlow: function (dependencyProperty) {
                 var entry = { };
                 if (!this.entries.TryGetValue(dependencyProperty, entry)) {
                     var propertyMetadata = dependencyProperty.GetMetadata(Bridge.getType(this));
 
                     // no need to create a new entry if the value is not inherited or coerced
                     if (!propertyMetadata.Inherits && (Bridge.staticEquals(propertyMetadata.CoerceValueCallback, null) || !dependencyProperty.IsAttached && !dependencyProperty.IsContainedBy(Bridge.getType(this)))) {
-                        return propertyMetadata.DefaultValue;
+                        var defaultValue = propertyMetadata.DefaultValue;
+                        this.typeObject[dependencyProperty.StringKey] = defaultValue;
+                        return defaultValue;
                     }
 
                     entry.v = this.CreateDependencyPropertyValueEntry(dependencyProperty, propertyMetadata);
@@ -340,9 +373,6 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
 
                 return entry.v.System$Windows$IDependencyPropertyValueEntry$Value;
-            },
-            GetValue$1: function (dependencyPropertyKey) {
-                return this.GetValue(dependencyPropertyKey.DependencyProperty);
             },
             SetValue: function (dependencyProperty, value, source) {
                 if (source === void 0) { source = 11; }
@@ -556,6 +586,14 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     System.Windows.DependencyPropertyValueEntryExtensions.SetBaseValue(this.GetInitializedValueEntry(e.Property), System.Windows.BaseValueSource.Inherited, e.NewValue);
                 }
             }
+        }
+    });
+
+    Bridge.ns("System.Windows.DependencyObject", $asm.$);
+
+    Bridge.apply($asm.$.System.Windows.DependencyObject, {
+        f1: function (type) {
+            return Bridge.Reflection.getTypeFullName(type);
         }
     });
 
@@ -2239,6 +2277,8 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             }
         },
         fields: {
+            StringKey: null,
+            MetadataKey: null,
             hashKey: null,
             typeMetadata: null,
             ownerMetadata: null,
@@ -2255,8 +2295,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             ValidateValueCallback: null,
             IsReadOnly: false,
             Inherits: false,
-            IsAttached: false,
-            StringKey: null
+            IsAttached: false
         },
         ctors: {
             ctor: function (hashKey, propertyType, metadata, validateValueCallback, isAttached, isReadOnly) {
@@ -2269,6 +2308,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 this.IsReadOnly = isReadOnly;
                 this.Inherits = metadata.Inherits;
                 this.StringKey = hashKey.StringKey;
+                this.MetadataKey = (hashKey.StringKey || "") + "%md";
                 this.hashCode = hashKey.getHashCode();
 
                 this.ownerMetadata = metadata;
@@ -2540,6 +2580,31 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 ClearAnimationValue: function (entry) {
                     entry.System$Windows$IDependencyPropertyValueEntry$SetValue(System.Windows.DependencyPropertyValueEntry.AnimationValuePriority, System.Windows.Data.ObservableValue.UnsetValue);
                 }
+            }
+        }
+    });
+
+    Bridge.define("System.Windows.DependencyTypeObject", {
+        fields: {
+            type: null
+        },
+        ctors: {
+            ctor: function (type) {
+                this.$initialize();
+                this.type = type;
+            }
+        },
+        methods: {
+            GetMetadata: function (dependencyProperty) {
+                var key = dependencyProperty.MetadataKey;
+                var value = this[key];
+                if (!(value === undefined)) {
+                    return value;
+                }
+
+                value = dependencyProperty.GetMetadata(this.type);
+                this[key] = value;
+                return value;
             }
         }
     });
@@ -9047,7 +9112,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             GetClassHandlers: function (classType) {
                 if (this.classesHandlers == null) {
-                    return System.Array.init(0, null, System.Windows.RoutedEventHandlerItem);
+                    return System.Linq.Enumerable.empty();
                 }
 
                 var flattenedHandlers = null;
@@ -9064,7 +9129,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                     classType = Bridge.Reflection.getBaseType(classType);
                 }
 
-                return classesHandlesCount > 1 ? System.Linq.Enumerable.from(flattenedHandlers).toArray() : (flattenedHandlers || System.Array.init(0, null, System.Windows.RoutedEventHandlerItem));
+                return classesHandlesCount > 1 ? System.Linq.Enumerable.from(flattenedHandlers).toArray() : (flattenedHandlers || System.Linq.Enumerable.empty());
             }
         }
     });
@@ -19356,7 +19421,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         },
         fields: {
             valueChangedReentrancyLock: null,
-            value: null,
+            InternalValue: null,
             notifyValueChangedEventHandler: null,
             indexedObservableValueChangedEventHandler: null,
             observableValues: null,
@@ -19378,17 +19443,25 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             },
             Value: {
                 get: function () {
-                    return this.value;
-                },
-                set: function (value) {
-                    if (Bridge.is(this.value, System.Windows.INotifyChanged)) {
-                        Bridge.cast(this.value, System.Windows.INotifyChanged).System$Windows$INotifyChanged$removeChanged(this.NotifyValueChangedEventHandler);
+                    var key = this.dependencyProperty.StringKey;
+                    var value = this.dependencyObject[key];
+                    if (!(value === undefined)) {
+                        return value;
                     }
 
-                    this.value = value;
+                    return null;
+                },
+                set: function (value) {
+                    var priorValue = this.Value;
+                    if (Bridge.is(priorValue, System.Windows.INotifyChanged)) {
+                        Bridge.cast(priorValue, System.Windows.INotifyChanged).System$Windows$INotifyChanged$removeChanged(this.NotifyValueChangedEventHandler);
+                    }
 
-                    if (Bridge.is(this.value, System.Windows.INotifyChanged)) {
-                        Bridge.cast(this.value, System.Windows.INotifyChanged).System$Windows$INotifyChanged$addChanged(this.NotifyValueChangedEventHandler);
+                    var key = this.dependencyProperty.StringKey;
+                    this.dependencyObject[key] = value;
+
+                    if (Bridge.is(value, System.Windows.INotifyChanged)) {
+                        Bridge.cast(value, System.Windows.INotifyChanged).System$Windows$INotifyChanged$addChanged(this.NotifyValueChangedEventHandler);
                     }
                 }
             },
@@ -31550,6 +31623,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
             },
             OnDragStarted: function (e) {
+                System.Diagnostics.Debug.assert(this._resizeData == null, "_resizeData is not null, DragCompleted was not called");
 
                 this.InitializeData(this.ShowsPreview);
             },
@@ -31699,6 +31773,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 }
             },
             MoveSplitter: function (horizontalChange, verticalChange) {
+                System.Diagnostics.Debug.assert(this._resizeData != null, "_resizeData should not be null when calling MoveSplitter");
 
                 var delta;
                 //DpiScale dpi = GetDpi();
