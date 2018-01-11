@@ -78,6 +78,14 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         $kind: "interface"
     });
 
+    Bridge.define("System.Windows.IExpressionProvider", {
+        $kind: "interface"
+    });
+
+    Bridge.define("System.Windows.Data.IObservableValue", {
+        $kind: "interface"
+    });
+
     Bridge.define("MS.Internal.KnownBoxes.BooleanBoxes", {
         statics: {
             fields: {
@@ -497,8 +505,8 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             CreateDependencyPropertyValueEntry: function (dependencyProperty, propertyMetadata) {
                 var isContained = dependencyProperty.IsAttached || dependencyProperty.IsContainedBy(Bridge.getType(this));
 
-                var entry = new System.Windows.DependencyPropertyValueEntry(this, dependencyProperty, isContained ? propertyMetadata.CoerceValueCallback : null);
-                System.Windows.DependencyPropertyValueEntryExtensions.SetBaseValue(entry, System.Windows.BaseValueSource.Default, propertyMetadata.DefaultValue);
+                var entry = new System.Windows.DependencyPropertyValueEntry(this, dependencyProperty, propertyMetadata.DefaultValue, isContained ? propertyMetadata.CoerceValueCallback : null);
+                //entry.SetBaseValue((int)BaseValueSource.Default, );
 
                 if (isContained) {
                     entry.System$Windows$IDependencyPropertyValueEntry$addValueChanged(this.containedEntryValueChangedEventHandler);
@@ -1745,14 +1753,6 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
     });
 
     Bridge.define("System.Windows.Markup.ITypeConverter", {
-        $kind: "interface"
-    });
-
-    Bridge.define("System.Windows.IExpressionProvider", {
-        $kind: "interface"
-    });
-
-    Bridge.define("System.Windows.Data.IObservableValue", {
         $kind: "interface"
     });
 
@@ -10052,6 +10052,21 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         $kind: "interface"
     });
 
+    Bridge.define("Granular.Presentation.Shared.Data.SimpleTemplateBinding", {
+        inherits: [System.Windows.IExpressionProvider],
+        alias: ["CreateExpression", "System$Windows$IExpressionProvider$CreateExpression"],
+        methods: {
+            CreateExpression: function (dependencyObject, dependencyProperty) {
+                throw new System.NotImplementedException();
+            }
+        }
+    });
+
+    Bridge.define("System.Windows.IExpression", {
+        inherits: [System.Windows.Data.IObservableValue],
+        $kind: "interface"
+    });
+
     Bridge.define("System.Windows.Application", {
         inherits: [System.Windows.IResourceContainer,System.Windows.Markup.IUriContext],
         statics: {
@@ -11869,11 +11884,6 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 return null;
             }
         }
-    });
-
-    Bridge.define("System.Windows.IExpression", {
-        inherits: [System.Windows.Data.IObservableValue],
-        $kind: "interface"
     });
 
     Bridge.define("System.Windows.Data.IPropertyObserver", {
@@ -17213,6 +17223,29 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         }
     });
 
+    Bridge.define("Granular.Presentation.Shared.Data.SimpleTemplateBindingExpression", {
+        inherits: [System.Windows.IExpression],
+        events: {
+            ValueChanged: null
+        },
+        props: {
+            Value: null
+        },
+        alias: [
+            "Value", "System$Windows$Data$IObservableValue$Value",
+            "addValueChanged", "System$Windows$Data$IObservableValue$addValueChanged",
+            "removeValueChanged", "System$Windows$Data$IObservableValue$removeValueChanged",
+            "SetValue", "System$Windows$IExpression$SetValue"
+        ],
+        methods: {
+            SetValue: function (value) {
+                // Do nothing. SimpleTemplateBinding does not apply to properties which
+                // update source on target changes
+                return true;
+            }
+        }
+    });
+
     Bridge.define("System.Windows.UIElement", {
         inherits: [System.Windows.Media.Visual,System.Windows.Media.Animation.IAnimatable,System.Windows.IInputElement],
         statics: {
@@ -19421,7 +19454,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
         },
         fields: {
             valueChangedReentrancyLock: null,
-            InternalValue: null,
+            internalValue: null,
             notifyValueChangedEventHandler: null,
             indexedObservableValueChangedEventHandler: null,
             observableValues: null,
@@ -19459,7 +19492,6 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
 
                     var key = this.dependencyProperty.StringKey;
                     this.dependencyObject[key] = value;
-
                     if (Bridge.is(value, System.Windows.INotifyChanged)) {
                         Bridge.cast(value, System.Windows.INotifyChanged).System$Windows$INotifyChanged$addChanged(this.NotifyValueChangedEventHandler);
                     }
@@ -19509,9 +19541,7 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
             init: function () {
                 this.valueChangedReentrancyLock = new Granular.ReentrancyLock();
             },
-            ctor: function (dependencyObject, dependencyProperty, coerceValueCallback) {
-                if (coerceValueCallback === void 0) { coerceValueCallback = null; }
-
+            ctor: function (dependencyObject, dependencyProperty, defaultValue, coerceValueCallback) {
                 this.$initialize();
                 this.dependencyObject = dependencyObject;
                 this.dependencyProperty = dependencyProperty;
@@ -19521,6 +19551,9 @@ Bridge.assembly("Granular.Presentation", function ($asm, globals) {
                 for (var i = 0; i < this.values.length; i = (i + 1) | 0) {
                     this.values[System.Array.index(i, this.values)] = System.Windows.Data.ObservableValue.UnsetValue;
                 }
+
+                this.values[System.Array.index(System.Windows.BaseValueSource.Default, this.values)] = !Bridge.staticEquals(coerceValueCallback, null) ? coerceValueCallback(dependencyObject, defaultValue) : defaultValue;
+                this.ValuePriority = System.Windows.BaseValueSource.Default;
             }
         },
         methods: {
