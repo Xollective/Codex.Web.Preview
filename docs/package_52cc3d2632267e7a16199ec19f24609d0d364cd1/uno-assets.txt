@@ -1,0 +1,8 @@
+Assets/SplashScreen.png
+Assets/images/dotnet.png
+Assets/images/microsoftlogo.png
+Assets/images/minus.png
+Assets/images/plus.png
+Assets/images/searchmagnifyingglass.png
+Assets/Overview.html
+Assets/testindex.zip
