@@ -1,602 +1,720 @@
 {
-  "Entries": {
+  "entries": {
     "dir.json": {
-      "Length": 83,
-      "PrecacheOffset": -1
+      "length": 83,
+      "precacheOffset": -1
     },
     "boundsource/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "boundsource/segments_1": {
-      "Length": 233,
-      "PrecacheOffset": -1
+      "length": 233,
+      "precacheOffset": -1
     },
     "boundsource/_0.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_0.cfe"
     },
     "boundsource/_0.cfs": {
-      "Length": 10646726,
-      "PrecacheOffset": -1
+      "length": 10646726,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_0.cfs"
     },
     "boundsource/_0.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_0.si"
     },
     "boundsource/_1.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_1.cfe"
     },
     "boundsource/_1.cfs": {
-      "Length": 1745507,
-      "PrecacheOffset": -1
+      "length": 1745507,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_1.cfs"
     },
     "boundsource/_1.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_1.si"
     },
     "boundsource/_2.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_2.cfe"
     },
     "boundsource/_2.cfs": {
-      "Length": 1010920,
-      "PrecacheOffset": -1
+      "length": 1010920,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_2.cfs"
     },
     "boundsource/_2.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_2.si"
     },
     "boundsource/_3.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_3.cfe"
     },
     "boundsource/_3.cfs": {
-      "Length": 1119913,
-      "PrecacheOffset": -1
+      "length": 1119913,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_3.cfs"
     },
     "boundsource/_3.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_3.si"
     },
     "boundsource/_4.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_4.cfe"
     },
     "boundsource/_4.cfs": {
-      "Length": 1001729,
-      "PrecacheOffset": -1
+      "length": 1001729,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_4.cfs"
     },
     "boundsource/_4.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "boundsource/a_4.si"
     },
     "commit/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "commit/segments_1": {
-      "Length": 89,
-      "PrecacheOffset": -1
+      "length": 89,
+      "precacheOffset": -1
     },
     "commit/_0.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "commit/a_0.cfe"
     },
     "commit/_0.cfs": {
-      "Length": 1388,
-      "PrecacheOffset": -1
+      "length": 1388,
+      "precacheOffset": -1,
+      "realPath": "commit/a_0.cfs"
     },
     "commit/_0.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "commit/a_0.si"
     },
     "commitfiles/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "commitfiles/segments_1": {
-      "Length": 89,
-      "PrecacheOffset": -1
+      "length": 89,
+      "precacheOffset": -1
     },
     "commitfiles/_0.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "commitfiles/a_0.cfe"
     },
     "commitfiles/_0.cfs": {
-      "Length": 1185,
-      "PrecacheOffset": -1
+      "length": 1185,
+      "precacheOffset": -1,
+      "realPath": "commitfiles/a_0.cfs"
     },
     "commitfiles/_0.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "commitfiles/a_0.si"
     },
     "definition/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "definition/segments_1": {
-      "Length": 341,
-      "PrecacheOffset": -1
+      "length": 341,
+      "precacheOffset": -1
     },
     "definition/_0.cfe": {
-      "Length": 336,
-      "PrecacheOffset": -1
+      "length": 336,
+      "precacheOffset": -1,
+      "realPath": "definition/a_0.cfe"
     },
     "definition/_0.cfs": {
-      "Length": 4071432,
-      "PrecacheOffset": -1
+      "length": 4071432,
+      "precacheOffset": -1,
+      "realPath": "definition/a_0.cfs"
     },
     "definition/_0.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "definition/a_0.si"
     },
     "definition/_1.cfe": {
-      "Length": 336,
-      "PrecacheOffset": -1
+      "length": 336,
+      "precacheOffset": -1,
+      "realPath": "definition/a_1.cfe"
     },
     "definition/_1.cfs": {
-      "Length": 2193678,
-      "PrecacheOffset": -1
+      "length": 2193678,
+      "precacheOffset": -1,
+      "realPath": "definition/a_1.cfs"
     },
     "definition/_1.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "definition/a_1.si"
     },
     "definition/_2.cfe": {
-      "Length": 336,
-      "PrecacheOffset": -1
+      "length": 336,
+      "precacheOffset": -1,
+      "realPath": "definition/a_2.cfe"
     },
     "definition/_2.cfs": {
-      "Length": 666824,
-      "PrecacheOffset": -1
+      "length": 666824,
+      "precacheOffset": -1,
+      "realPath": "definition/a_2.cfs"
     },
     "definition/_2.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "definition/a_2.si"
     },
     "definition/_3.cfe": {
-      "Length": 336,
-      "PrecacheOffset": -1
+      "length": 336,
+      "precacheOffset": -1,
+      "realPath": "definition/a_3.cfe"
     },
     "definition/_3.cfs": {
-      "Length": 246532,
-      "PrecacheOffset": -1
+      "length": 246532,
+      "precacheOffset": -1,
+      "realPath": "definition/a_3.cfs"
     },
     "definition/_3.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "definition/a_3.si"
     },
     "definition/_4.cfe": {
-      "Length": 336,
-      "PrecacheOffset": -1
+      "length": 336,
+      "precacheOffset": -1,
+      "realPath": "definition/a_4.cfe"
     },
     "definition/_4.cfs": {
-      "Length": 113275,
-      "PrecacheOffset": -1
+      "length": 113275,
+      "precacheOffset": -1,
+      "realPath": "definition/a_4.cfs"
     },
     "definition/_4.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "definition/a_4.si"
     },
     "definition/_5.cfe": {
-      "Length": 336,
-      "PrecacheOffset": -1
+      "length": 336,
+      "precacheOffset": -1,
+      "realPath": "definition/a_5.cfe"
     },
     "definition/_5.cfs": {
-      "Length": 554945,
-      "PrecacheOffset": -1
+      "length": 554945,
+      "precacheOffset": -1,
+      "realPath": "definition/a_5.cfs"
     },
     "definition/_5.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "definition/a_5.si"
     },
     "definition/_6.cfe": {
-      "Length": 336,
-      "PrecacheOffset": -1
+      "length": 336,
+      "precacheOffset": -1,
+      "realPath": "definition/a_6.cfe"
     },
     "definition/_6.cfs": {
-      "Length": 492419,
-      "PrecacheOffset": -1
+      "length": 492419,
+      "precacheOffset": -1,
+      "realPath": "definition/a_6.cfs"
     },
     "definition/_6.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "definition/a_6.si"
     },
     "definition/_7.cfe": {
-      "Length": 336,
-      "PrecacheOffset": -1
+      "length": 336,
+      "precacheOffset": -1,
+      "realPath": "definition/a_7.cfe"
     },
     "definition/_7.cfs": {
-      "Length": 644386,
-      "PrecacheOffset": -1
+      "length": 644386,
+      "precacheOffset": -1,
+      "realPath": "definition/a_7.cfs"
     },
     "definition/_7.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "definition/a_7.si"
     },
     "language/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "language/segments_1": {
-      "Length": 53,
-      "PrecacheOffset": -1
+      "length": 53,
+      "precacheOffset": -1
     },
     "project/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "project/segments_1": {
-      "Length": 89,
-      "PrecacheOffset": -1
+      "length": 89,
+      "precacheOffset": -1
     },
     "project/_0.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "project/a_0.cfe"
     },
     "project/_0.cfs": {
-      "Length": 127936,
-      "PrecacheOffset": -1
+      "length": 127936,
+      "precacheOffset": -1,
+      "realPath": "project/a_0.cfs"
     },
     "project/_0.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "project/a_0.si"
     },
     "projectreference/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "projectreference/segments_1": {
-      "Length": 197,
-      "PrecacheOffset": -1
+      "length": 197,
+      "precacheOffset": -1
     },
     "projectreference/_0.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_0.cfe"
     },
     "projectreference/_0.cfs": {
-      "Length": 242116,
-      "PrecacheOffset": -1
+      "length": 242116,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_0.cfs"
     },
     "projectreference/_0.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_0.si"
     },
     "projectreference/_1.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_1.cfe"
     },
     "projectreference/_1.cfs": {
-      "Length": 73071,
-      "PrecacheOffset": -1
+      "length": 73071,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_1.cfs"
     },
     "projectreference/_1.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_1.si"
     },
     "projectreference/_2.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_2.cfe"
     },
     "projectreference/_2.cfs": {
-      "Length": 25264,
-      "PrecacheOffset": -1
+      "length": 25264,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_2.cfs"
     },
     "projectreference/_2.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_2.si"
     },
     "projectreference/_3.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_3.cfe"
     },
     "projectreference/_3.cfs": {
-      "Length": 7067,
-      "PrecacheOffset": -1
+      "length": 7067,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_3.cfs"
     },
     "projectreference/_3.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "projectreference/a_3.si"
     },
     "property/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "property/segments_1": {
-      "Length": 53,
-      "PrecacheOffset": -1
+      "length": 53,
+      "precacheOffset": -1
     },
     "reference/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "reference/segments_1": {
-      "Length": 341,
-      "PrecacheOffset": -1
+      "length": 341,
+      "precacheOffset": -1
     },
     "reference/_0.cfe": {
-      "Length": 274,
-      "PrecacheOffset": -1
+      "length": 274,
+      "precacheOffset": -1,
+      "realPath": "reference/a_0.cfe"
     },
     "reference/_0.cfs": {
-      "Length": 7243768,
-      "PrecacheOffset": -1
+      "length": 7243768,
+      "precacheOffset": -1,
+      "realPath": "reference/a_0.cfs"
     },
     "reference/_0.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "reference/a_0.si"
     },
     "reference/_1.cfe": {
-      "Length": 274,
-      "PrecacheOffset": -1
+      "length": 274,
+      "precacheOffset": -1,
+      "realPath": "reference/a_1.cfe"
     },
     "reference/_1.cfs": {
-      "Length": 6883876,
-      "PrecacheOffset": -1
+      "length": 6883876,
+      "precacheOffset": -1,
+      "realPath": "reference/a_1.cfs"
     },
     "reference/_1.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "reference/a_1.si"
     },
     "reference/_2.cfe": {
-      "Length": 274,
-      "PrecacheOffset": -1
+      "length": 274,
+      "precacheOffset": -1,
+      "realPath": "reference/a_2.cfe"
     },
     "reference/_2.cfs": {
-      "Length": 5986581,
-      "PrecacheOffset": -1
+      "length": 5986581,
+      "precacheOffset": -1,
+      "realPath": "reference/a_2.cfs"
     },
     "reference/_2.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "reference/a_2.si"
     },
     "reference/_3.cfe": {
-      "Length": 274,
-      "PrecacheOffset": -1
+      "length": 274,
+      "precacheOffset": -1,
+      "realPath": "reference/a_3.cfe"
     },
     "reference/_3.cfs": {
-      "Length": 4334065,
-      "PrecacheOffset": -1
+      "length": 4334065,
+      "precacheOffset": -1,
+      "realPath": "reference/a_3.cfs"
     },
     "reference/_3.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "reference/a_3.si"
     },
     "reference/_4.cfe": {
-      "Length": 274,
-      "PrecacheOffset": -1
+      "length": 274,
+      "precacheOffset": -1,
+      "realPath": "reference/a_4.cfe"
     },
     "reference/_4.cfs": {
-      "Length": 3052306,
-      "PrecacheOffset": -1
+      "length": 3052306,
+      "precacheOffset": -1,
+      "realPath": "reference/a_4.cfs"
     },
     "reference/_4.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "reference/a_4.si"
     },
     "reference/_5.cfe": {
-      "Length": 274,
-      "PrecacheOffset": -1
+      "length": 274,
+      "precacheOffset": -1,
+      "realPath": "reference/a_5.cfe"
     },
     "reference/_5.cfs": {
-      "Length": 2531524,
-      "PrecacheOffset": -1
+      "length": 2531524,
+      "precacheOffset": -1,
+      "realPath": "reference/a_5.cfs"
     },
     "reference/_5.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "reference/a_5.si"
     },
     "reference/_6.cfe": {
-      "Length": 274,
-      "PrecacheOffset": -1
+      "length": 274,
+      "precacheOffset": -1,
+      "realPath": "reference/a_6.cfe"
     },
     "reference/_6.cfs": {
-      "Length": 2251915,
-      "PrecacheOffset": -1
+      "length": 2251915,
+      "precacheOffset": -1,
+      "realPath": "reference/a_6.cfs"
     },
     "reference/_6.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "reference/a_6.si"
     },
     "reference/_7.cfe": {
-      "Length": 274,
-      "PrecacheOffset": -1
+      "length": 274,
+      "precacheOffset": -1,
+      "realPath": "reference/a_7.cfe"
     },
     "reference/_7.cfs": {
-      "Length": 2341551,
-      "PrecacheOffset": -1
+      "length": 2341551,
+      "precacheOffset": -1,
+      "realPath": "reference/a_7.cfs"
     },
     "reference/_7.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "reference/a_7.si"
     },
     "registeredentity/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "registeredentity/segments_1": {
-      "Length": 53,
-      "PrecacheOffset": -1
+      "length": 53,
+      "precacheOffset": -1
     },
     "repository/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "repository/segments_1": {
-      "Length": 89,
-      "PrecacheOffset": -1
+      "length": 89,
+      "precacheOffset": -1
     },
     "repository/_0.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "repository/a_0.cfe"
     },
     "repository/_0.cfs": {
-      "Length": 1297,
-      "PrecacheOffset": -1
+      "length": 1297,
+      "precacheOffset": -1,
+      "realPath": "repository/a_0.cfs"
     },
     "repository/_0.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "repository/a_0.si"
     },
     "storedfilter/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "storedfilter/segments_1": {
-      "Length": 53,
-      "PrecacheOffset": -1
+      "length": 53,
+      "precacheOffset": -1
     },
     "textchunk/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "textchunk/segments_1": {
-      "Length": 341,
-      "PrecacheOffset": -1
+      "length": 341,
+      "precacheOffset": -1
     },
     "textchunk/_0.cfe": {
-      "Length": 284,
-      "PrecacheOffset": -1
+      "length": 284,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_0.cfe"
     },
     "textchunk/_0.cfs": {
-      "Length": 6267647,
-      "PrecacheOffset": -1
+      "length": 6267647,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_0.cfs"
     },
     "textchunk/_0.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_0.si"
     },
     "textchunk/_1.cfe": {
-      "Length": 284,
-      "PrecacheOffset": -1
+      "length": 284,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_1.cfe"
     },
     "textchunk/_1.cfs": {
-      "Length": 3324669,
-      "PrecacheOffset": -1
+      "length": 3324669,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_1.cfs"
     },
     "textchunk/_1.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_1.si"
     },
     "textchunk/_2.cfe": {
-      "Length": 284,
-      "PrecacheOffset": -1
+      "length": 284,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_2.cfe"
     },
     "textchunk/_2.cfs": {
-      "Length": 1772761,
-      "PrecacheOffset": -1
+      "length": 1772761,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_2.cfs"
     },
     "textchunk/_2.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_2.si"
     },
     "textchunk/_3.cfe": {
-      "Length": 284,
-      "PrecacheOffset": -1
+      "length": 284,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_3.cfe"
     },
     "textchunk/_3.cfs": {
-      "Length": 1244771,
-      "PrecacheOffset": -1
+      "length": 1244771,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_3.cfs"
     },
     "textchunk/_3.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_3.si"
     },
     "textchunk/_4.cfe": {
-      "Length": 284,
-      "PrecacheOffset": -1
+      "length": 284,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_4.cfe"
     },
     "textchunk/_4.cfs": {
-      "Length": 643454,
-      "PrecacheOffset": -1
+      "length": 643454,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_4.cfs"
     },
     "textchunk/_4.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_4.si"
     },
     "textchunk/_5.cfe": {
-      "Length": 284,
-      "PrecacheOffset": -1
+      "length": 284,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_5.cfe"
     },
     "textchunk/_5.cfs": {
-      "Length": 209546,
-      "PrecacheOffset": -1
+      "length": 209546,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_5.cfs"
     },
     "textchunk/_5.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_5.si"
     },
     "textchunk/_6.cfe": {
-      "Length": 284,
-      "PrecacheOffset": -1
+      "length": 284,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_6.cfe"
     },
     "textchunk/_6.cfs": {
-      "Length": 334033,
-      "PrecacheOffset": -1
+      "length": 334033,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_6.cfs"
     },
     "textchunk/_6.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_6.si"
     },
     "textchunk/_7.cfe": {
-      "Length": 284,
-      "PrecacheOffset": -1
+      "length": 284,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_7.cfe"
     },
     "textchunk/_7.cfs": {
-      "Length": 217988,
-      "PrecacheOffset": -1
+      "length": 217988,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_7.cfs"
     },
     "textchunk/_7.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "textchunk/a_7.si"
     },
     "textsource/segments.gen": {
-      "Length": 36,
-      "PrecacheOffset": -1
+      "length": 36,
+      "precacheOffset": -1
     },
     "textsource/segments_1": {
-      "Length": 161,
-      "PrecacheOffset": -1
+      "length": 161,
+      "precacheOffset": -1
     },
     "textsource/_0.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "textsource/a_0.cfe"
     },
     "textsource/_0.cfs": {
-      "Length": 2059189,
-      "PrecacheOffset": -1
+      "length": 2059189,
+      "precacheOffset": -1,
+      "realPath": "textsource/a_0.cfs"
     },
     "textsource/_0.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "textsource/a_0.si"
     },
     "textsource/_1.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "textsource/a_1.cfe"
     },
     "textsource/_1.cfs": {
-      "Length": 261306,
-      "PrecacheOffset": -1
+      "length": 261306,
+      "precacheOffset": -1,
+      "realPath": "textsource/a_1.cfs"
     },
     "textsource/_1.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "textsource/a_1.si"
     },
     "textsource/_2.cfe": {
-      "Length": 210,
-      "PrecacheOffset": -1
+      "length": 210,
+      "precacheOffset": -1,
+      "realPath": "textsource/a_2.cfe"
     },
     "textsource/_2.cfs": {
-      "Length": 36462,
-      "PrecacheOffset": -1
+      "length": 36462,
+      "precacheOffset": -1,
+      "realPath": "textsource/a_2.cfs"
     },
     "textsource/_2.si": {
-      "Length": 242,
-      "PrecacheOffset": -1
+      "length": 242,
+      "precacheOffset": -1,
+      "realPath": "textsource/a_2.si"
     }
-  },
-  "PrecacheEntriesStartPosition": 0,
-  "CachedEntries": []
+  }
 }
