@@ -1,0 +1,602 @@
+{
+  "Entries": {
+    "dir.json": {
+      "Length": 83,
+      "PrecacheOffset": -1
+    },
+    "boundsource/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "boundsource/segments_1": {
+      "Length": 233,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_0.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_0.cfs": {
+      "Length": 10646726,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_0.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_1.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_1.cfs": {
+      "Length": 1745507,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_1.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_2.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_2.cfs": {
+      "Length": 1010920,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_2.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_3.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_3.cfs": {
+      "Length": 1119913,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_3.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_4.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_4.cfs": {
+      "Length": 1001729,
+      "PrecacheOffset": -1
+    },
+    "boundsource/_4.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "commit/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "commit/segments_1": {
+      "Length": 89,
+      "PrecacheOffset": -1
+    },
+    "commit/_0.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "commit/_0.cfs": {
+      "Length": 1388,
+      "PrecacheOffset": -1
+    },
+    "commit/_0.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "commitfiles/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "commitfiles/segments_1": {
+      "Length": 89,
+      "PrecacheOffset": -1
+    },
+    "commitfiles/_0.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "commitfiles/_0.cfs": {
+      "Length": 1185,
+      "PrecacheOffset": -1
+    },
+    "commitfiles/_0.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "definition/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "definition/segments_1": {
+      "Length": 341,
+      "PrecacheOffset": -1
+    },
+    "definition/_0.cfe": {
+      "Length": 336,
+      "PrecacheOffset": -1
+    },
+    "definition/_0.cfs": {
+      "Length": 4071432,
+      "PrecacheOffset": -1
+    },
+    "definition/_0.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "definition/_1.cfe": {
+      "Length": 336,
+      "PrecacheOffset": -1
+    },
+    "definition/_1.cfs": {
+      "Length": 2193678,
+      "PrecacheOffset": -1
+    },
+    "definition/_1.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "definition/_2.cfe": {
+      "Length": 336,
+      "PrecacheOffset": -1
+    },
+    "definition/_2.cfs": {
+      "Length": 666824,
+      "PrecacheOffset": -1
+    },
+    "definition/_2.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "definition/_3.cfe": {
+      "Length": 336,
+      "PrecacheOffset": -1
+    },
+    "definition/_3.cfs": {
+      "Length": 246532,
+      "PrecacheOffset": -1
+    },
+    "definition/_3.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "definition/_4.cfe": {
+      "Length": 336,
+      "PrecacheOffset": -1
+    },
+    "definition/_4.cfs": {
+      "Length": 113275,
+      "PrecacheOffset": -1
+    },
+    "definition/_4.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "definition/_5.cfe": {
+      "Length": 336,
+      "PrecacheOffset": -1
+    },
+    "definition/_5.cfs": {
+      "Length": 554945,
+      "PrecacheOffset": -1
+    },
+    "definition/_5.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "definition/_6.cfe": {
+      "Length": 336,
+      "PrecacheOffset": -1
+    },
+    "definition/_6.cfs": {
+      "Length": 492419,
+      "PrecacheOffset": -1
+    },
+    "definition/_6.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "definition/_7.cfe": {
+      "Length": 336,
+      "PrecacheOffset": -1
+    },
+    "definition/_7.cfs": {
+      "Length": 644386,
+      "PrecacheOffset": -1
+    },
+    "definition/_7.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "language/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "language/segments_1": {
+      "Length": 53,
+      "PrecacheOffset": -1
+    },
+    "project/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "project/segments_1": {
+      "Length": 89,
+      "PrecacheOffset": -1
+    },
+    "project/_0.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "project/_0.cfs": {
+      "Length": 127936,
+      "PrecacheOffset": -1
+    },
+    "project/_0.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "projectreference/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "projectreference/segments_1": {
+      "Length": 197,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_0.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_0.cfs": {
+      "Length": 242116,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_0.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_1.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_1.cfs": {
+      "Length": 73071,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_1.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_2.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_2.cfs": {
+      "Length": 25264,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_2.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_3.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_3.cfs": {
+      "Length": 7067,
+      "PrecacheOffset": -1
+    },
+    "projectreference/_3.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "property/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "property/segments_1": {
+      "Length": 53,
+      "PrecacheOffset": -1
+    },
+    "reference/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "reference/segments_1": {
+      "Length": 341,
+      "PrecacheOffset": -1
+    },
+    "reference/_0.cfe": {
+      "Length": 274,
+      "PrecacheOffset": -1
+    },
+    "reference/_0.cfs": {
+      "Length": 7243768,
+      "PrecacheOffset": -1
+    },
+    "reference/_0.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "reference/_1.cfe": {
+      "Length": 274,
+      "PrecacheOffset": -1
+    },
+    "reference/_1.cfs": {
+      "Length": 6883876,
+      "PrecacheOffset": -1
+    },
+    "reference/_1.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "reference/_2.cfe": {
+      "Length": 274,
+      "PrecacheOffset": -1
+    },
+    "reference/_2.cfs": {
+      "Length": 5986581,
+      "PrecacheOffset": -1
+    },
+    "reference/_2.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "reference/_3.cfe": {
+      "Length": 274,
+      "PrecacheOffset": -1
+    },
+    "reference/_3.cfs": {
+      "Length": 4334065,
+      "PrecacheOffset": -1
+    },
+    "reference/_3.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "reference/_4.cfe": {
+      "Length": 274,
+      "PrecacheOffset": -1
+    },
+    "reference/_4.cfs": {
+      "Length": 3052306,
+      "PrecacheOffset": -1
+    },
+    "reference/_4.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "reference/_5.cfe": {
+      "Length": 274,
+      "PrecacheOffset": -1
+    },
+    "reference/_5.cfs": {
+      "Length": 2531524,
+      "PrecacheOffset": -1
+    },
+    "reference/_5.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "reference/_6.cfe": {
+      "Length": 274,
+      "PrecacheOffset": -1
+    },
+    "reference/_6.cfs": {
+      "Length": 2251915,
+      "PrecacheOffset": -1
+    },
+    "reference/_6.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "reference/_7.cfe": {
+      "Length": 274,
+      "PrecacheOffset": -1
+    },
+    "reference/_7.cfs": {
+      "Length": 2341551,
+      "PrecacheOffset": -1
+    },
+    "reference/_7.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "registeredentity/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "registeredentity/segments_1": {
+      "Length": 53,
+      "PrecacheOffset": -1
+    },
+    "repository/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "repository/segments_1": {
+      "Length": 89,
+      "PrecacheOffset": -1
+    },
+    "repository/_0.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "repository/_0.cfs": {
+      "Length": 1297,
+      "PrecacheOffset": -1
+    },
+    "repository/_0.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "storedfilter/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "storedfilter/segments_1": {
+      "Length": 53,
+      "PrecacheOffset": -1
+    },
+    "textchunk/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "textchunk/segments_1": {
+      "Length": 341,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_0.cfe": {
+      "Length": 284,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_0.cfs": {
+      "Length": 6267647,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_0.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_1.cfe": {
+      "Length": 284,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_1.cfs": {
+      "Length": 3324669,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_1.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_2.cfe": {
+      "Length": 284,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_2.cfs": {
+      "Length": 1772761,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_2.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_3.cfe": {
+      "Length": 284,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_3.cfs": {
+      "Length": 1244771,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_3.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_4.cfe": {
+      "Length": 284,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_4.cfs": {
+      "Length": 643454,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_4.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_5.cfe": {
+      "Length": 284,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_5.cfs": {
+      "Length": 209546,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_5.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_6.cfe": {
+      "Length": 284,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_6.cfs": {
+      "Length": 334033,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_6.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_7.cfe": {
+      "Length": 284,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_7.cfs": {
+      "Length": 217988,
+      "PrecacheOffset": -1
+    },
+    "textchunk/_7.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "textsource/segments.gen": {
+      "Length": 36,
+      "PrecacheOffset": -1
+    },
+    "textsource/segments_1": {
+      "Length": 161,
+      "PrecacheOffset": -1
+    },
+    "textsource/_0.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "textsource/_0.cfs": {
+      "Length": 2059189,
+      "PrecacheOffset": -1
+    },
+    "textsource/_0.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "textsource/_1.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "textsource/_1.cfs": {
+      "Length": 261306,
+      "PrecacheOffset": -1
+    },
+    "textsource/_1.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    },
+    "textsource/_2.cfe": {
+      "Length": 210,
+      "PrecacheOffset": -1
+    },
+    "textsource/_2.cfs": {
+      "Length": 36462,
+      "PrecacheOffset": -1
+    },
+    "textsource/_2.si": {
+      "Length": 242,
+      "PrecacheOffset": -1
+    }
+  },
+  "PrecacheEntriesStartPosition": 0,
+  "CachedEntries": []
+}
